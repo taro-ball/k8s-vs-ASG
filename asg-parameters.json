@@ -1,0 +1,19 @@
+[
+    {
+      "ParameterKey": "mySubnet1",
+      "ParameterValue": "subnet1"
+    },
+    {
+      "ParameterKey": "mySubnet2",
+      "ParameterValue": "subnet2"
+    },
+    {
+      "ParameterKey": "KeyPairName",
+      "ParameterValue": "aws-key"
+    },
+    {
+      "ParameterKey": "myVPC",
+      "ParameterValue": "vpc1"
+    }
+  ]
+  
