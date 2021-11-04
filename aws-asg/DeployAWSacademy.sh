@@ -2,5 +2,5 @@
 aws cloudformation create-stack\
  --disable-rollback --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND\
  --stack-name $1 --region us-east-1\
- --template-body file://asg-template.yaml --parameters file://.exclDevparams.json
+ --template-body file://asg-template.yaml --parameters file://asg-parameters.json
  

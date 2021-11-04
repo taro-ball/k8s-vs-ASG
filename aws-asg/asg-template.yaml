@@ -21,6 +21,10 @@ Parameters:
     ConstraintDescription: Must be an existing EC2 Keypair.
     #Description: x
     Type: 'AWS::EC2::KeyPair::KeyName'
+    Default: 'aws-dev-key'
+  AMIimageID:
+    #Description: 
+    Type: String
   #myHost:
     #Type: String
 
@@ -37,7 +41,7 @@ Resources:
               DeleteOnTermination: true
               #Encrypted: true
             DeviceName: /dev/xvdcz
-        ImageId: ami-04a81599b183d7908
+        ImageId: !Ref AMIimageID
         InstanceType: !Ref myInstanceType
         KeyName: !Ref KeyPairName
         Monitoring: 
