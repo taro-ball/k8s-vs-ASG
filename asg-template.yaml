@@ -21,6 +21,8 @@ Parameters:
     ConstraintDescription: Must be an existing EC2 Keypair.
     #Description: x
     Type: 'AWS::EC2::KeyPair::KeyName'
+  myHost:
+    Type: String
 
 Resources:
   myLaunchTemplate:
@@ -75,7 +77,19 @@ Resources:
         - Key: Purpose
           Value: WebServerGroup
           PropagateAtLaunch: "false"
-          
+
+  AppServerSP:
+    # scale up when the average CPU usage of the group reaches 75% 
+    Type: 'AWS::AutoScaling::ScalingPolicy' 
+    Properties:
+        AutoScalingGroupName: !Ref myASG
+        EstimatedInstanceWarmup: 60
+        PolicyType: TargetTrackingScaling
+        TargetTrackingConfiguration:
+            PredefinedMetricSpecification:
+                PredefinedMetricType: ASGAverageCPUUtilization 
+            TargetValue: 75
+
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
