@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters: 
+
+  myVPC:
+    Type: String
+  mySubnet1:
+    #Description: 
+    Type: String
+  mySubnet2:
+    #Description: 
+    Type: String
+  #mySecGroup1:
+    #Description: 
+    #Type: String
+  myInstanceType:
+    #Description: Instance Type
+    Type: String
+    Default: 't3.micro'
+  KeyPairName:
+    ConstraintDescription: Must be an existing EC2 Keypair.
+    #Description: x
+    Type: 'AWS::EC2::KeyPair::KeyName'
+
+Resources:
+  myLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
+      LaunchTemplateData: 
+        BlockDeviceMappings: 
+          - Ebs:
+              VolumeSize: 8
+              VolumeType: gp3
+              DeleteOnTermination: true
+              #Encrypted: true
+            DeviceName: /dev/xvdcz
+        ImageId: ami-04a81599b183d7908
+        InstanceType: !Ref myInstanceType
+        KeyName: !Ref KeyPairName
+        Monitoring: 
+          Enabled: true
+        SecurityGroupIds: 
+          #- !Ref mySecGroup1
+          - !Ref WebServerSecurityGroup
+        UserData: !Base64 
+          'Fn::Sub': |-
+            #!/bin/bash -xe
+            # setup test app
+            yum update -y
+            yum install -y httpd
+            service httpd start  
+            echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+
+  myASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
+      MinSize: "1"
+      MaxSize: "6"
+      DesiredCapacity: "1"
+      HealthCheckGracePeriod: 300
+      LaunchTemplate:
+        LaunchTemplateId: !Ref myLaunchTemplate
+        Version: !GetAtt myLaunchTemplate.LatestVersionNumber
+      VPCZoneIdentifier:
+        - !Ref mySubnet1
+        - !Ref mySubnet2
+      MetricsCollection: 
+        - Granularity: "1Minute"
+          Metrics: 
+            - "GroupMinSize"
+            - "GroupMaxSize"
+      Tags:
+        - Key: Purpose
+          Value: WebServerGroup
+          PropagateAtLaunch: "false"
+          
+  WebServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable HTTP access via port 80
+      VpcId: !Ref myVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 10.120.133.134/32
