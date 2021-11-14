@@ -22,6 +22,10 @@ Parameters:
     #Description: x
     Type: 'AWS::EC2::KeyPair::KeyName'
     Default: 'aws-dev-key'
+  myAPPport:
+    #Description: 
+    Type: String
+    Default: '80'
   AMIimageID:
     #Description: 
     Type: String
@@ -57,10 +61,16 @@ Resources:
             yum install -y httpd
             service httpd start  
             echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+        Tags:
+          - Key: Name
+            Value: !Sub "${AWS::StackName}-temp-instance"
+            PropagateAtLaunch: "false"
 
   myASG:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
+      TargetGroupARNs:
+        - !Ref myALBTargetGroup
       AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
       MinSize: "1"
       MaxSize: "6"
@@ -101,6 +111,60 @@ Resources:
       VpcId: !Ref myVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: 10.120.133.134/32
+          FromPort: !Ref myAPPport
+          ToPort: !Ref myAPPport
+          CidrIp: 10.120.133.0/24
+
+  myALBLoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: !Sub '${AWS::StackName}-alb'
+      Scheme: internal
+      IpAddressType: ipv4   
+      LoadBalancerAttributes: 
+        - Key: idle_timeout.timeout_seconds 
+          Value: 180   
+      Subnets:
+        - !Ref mySubnet1
+        - !Ref mySubnet2
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      Type: application          
+
+  myALBTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    #Condition: CreateTG1
+    Properties:
+      Name: !Sub '${AWS::StackName}-tg1'
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      HealthCheckPath: "/"
+      HealthCheckPort: !Ref myAPPport
+      HealthCheckProtocol: HTTP
+      Matcher:
+        HttpCode: 200-499
+      Port:  !Ref myAPPport
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref myVPC
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: 'false'
+        #- Key: stickiness.type
+          #Value: lb_cookie
+        #- Key: stickiness.lb_cookie.duration_seconds
+          #Value: '30'
+
+  myALBListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    #Condition: CreateTG1
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref myALBTargetGroup
+      LoadBalancerArn: !Ref myALBLoadBalancer
+      Port: !Ref myAPPport
+      Protocol: HTTP
+      #Crtificates: 
+         #- CertificateArn: 
