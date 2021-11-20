@@ -61,10 +61,6 @@ Resources:
             yum install -y httpd
             service httpd start  
             echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
-        Tags:
-          - Key: Name
-            Value: !Sub "${AWS::StackName}-temp-instance"
-            PropagateAtLaunch: "false"
 
   myASG:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -91,6 +87,9 @@ Resources:
         - Key: Purpose
           Value: WebServerGroup
           PropagateAtLaunch: "false"
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-instance"
+          PropagateAtLaunch: "true"
 
   AppServerSP:
     # scale up when the average CPU usage of the group reaches 75% 
