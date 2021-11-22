@@ -31,6 +31,11 @@ Parameters:
     Type: String
   #myHost:
     #Type: String
+  AppBucket:
+    Description:
+      The S3 bucket containing app
+    Type: String
+    Default: pasha-test1
 
 Resources:
   myLaunchTemplate:
@@ -53,6 +58,8 @@ Resources:
         SecurityGroupIds: 
           #- !Ref mySecGroup1
           - !Ref WebServerSecurityGroup
+        IamInstanceProfile:
+            Name:  !Ref myInstanceProfile
         UserData: !Base64 
           'Fn::Sub': |-
             #!/bin/bash -xe
@@ -61,6 +68,9 @@ Resources:
             yum install -y httpd
             service httpd start  
             echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+            cd /tmp/
+            aws s3 cp s3://${AppBucket}/app.zip .
+            unzip app.zip
 
   myASG:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -112,7 +122,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: !Ref myAPPport
           ToPort: !Ref myAPPport
-          CidrIp: 10.120.133.0/24
+          CidrIp: 10.120.105.0/24
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 10.120.105.0/24
 
   myALBLoadBalancer:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
@@ -166,4 +180,43 @@ Resources:
       Port: !Ref myAPPport
       Protocol: HTTP
       #Crtificates: 
-         #- CertificateArn: 
+         #- CertificateArn:
+
+  myInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      InstanceProfileName: !Sub '${AWS::StackName}-ec2-instance-profile'
+      Path: /
+      Roles: 
+       - !Ref myInstanceRole
+
+  myInstanceRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+                - ssm.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore 
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-InlinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              -
+                Effect: Allow
+                Action: 
+                  - s3:Get*
+                  - s3:List*
+                Resource: 
+                 - !Sub 'arn:aws:s3:::${AppBucket}'
+                 - !Sub 'arn:aws:s3:::${AppBucket}/*'
