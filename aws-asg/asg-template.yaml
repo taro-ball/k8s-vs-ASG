@@ -71,6 +71,10 @@ Resources:
             cd /tmp/
             aws s3 cp s3://${AppBucket}/app.zip .
             unzip app.zip
+            cd app
+            PORT=3000 /usr/local/lib/nodejs/node-v16.13.0-linux-x64/bin/node server.js
+            #npm start
+            
 
   myASG:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -123,6 +127,10 @@ Resources:
           FromPort: !Ref myAPPport
           ToPort: !Ref myAPPport
           CidrIp: 10.120.105.0/24
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 10.120.104.0/24
         - IpProtocol: tcp
           FromPort: 3000
           ToPort: 3000
