@@ -25,12 +25,13 @@ Parameters:
   myAPPport:
     #Description: 
     Type: String
-    Default: '80'
+    Default: '3000'
   AMIimageID:
     #Description: 
     Type: String
-  #myHost:
-    #Type: String
+  testHostSubnet:
+    Type: String
+    Default: '10.120.0.0/16'
   AppBucket:
     Description:
       The S3 bucket containing app
@@ -126,15 +127,23 @@ Resources:
         - IpProtocol: tcp
           FromPort: !Ref myAPPport
           ToPort: !Ref myAPPport
-          CidrIp: 10.120.105.0/24
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
         - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
-          CidrIp: 10.120.104.0/24
-        - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
-          CidrIp: 10.120.105.0/24
+          FromPort: !Ref myAPPport
+          ToPort: !Ref myAPPport
+          CidrIp: !Ref testHostSubnet
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Load Balancer Security Group
+      VpcId: !Ref myVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: !Ref myAPPport
+        ToPort: !Ref myAPPport
+        CidrIp: !Ref testHostSubnet
+        #SourceSecurityGroupId: !Ref ProxySecurityGroup 
 
   myALBLoadBalancer:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
@@ -149,7 +158,7 @@ Resources:
         - !Ref mySubnet1
         - !Ref mySubnet2
       SecurityGroups:
-        - !Ref WebServerSecurityGroup
+        - !Ref ALBSecurityGroup
       Type: application          
 
   myALBTargetGroup:
