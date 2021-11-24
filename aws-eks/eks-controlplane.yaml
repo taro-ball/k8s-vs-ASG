@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters: 
+
+  myVPC:
+    Type: String
+  mySubnet1:
+    #Description: 
+    Type: String
+  mySubnet2:
+    #Description: 
+    Type: String
+
+Resources:
+  EKSIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - eks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: !Sub "${AWS::StackName}-EKSIAMRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+  
+  ControlPlaneSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Cluster communication with worker nodes
+      VpcId: !Ref myVPC
+
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Sub "${AWS::StackName}-cluster"
+      RoleArn:
+        "Fn::GetAtt": ["EKSIAMRole", "Arn"]
+      ResourcesVpcConfig:
+        EndpointPrivateAccess: true
+        SecurityGroupIds:
+          - !Ref ControlPlaneSecurityGroup
+        SubnetIds:
+          - !Ref mySubnet1
+          - !Ref mySubnet2
+    DependsOn: [EKSIAMRole, ControlPlaneSecurityGroup]
+
+Outputs:
+  SecurityGroups:
+    Description: Security group for the cluster control plane communication with worker nodes
+    Value: !Join [ ",", [ !Ref ControlPlaneSecurityGroup ] ]
