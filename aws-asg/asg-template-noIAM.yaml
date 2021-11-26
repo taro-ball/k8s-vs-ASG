@@ -1,0 +1,205 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters: 
+
+  myVPC:
+    Type: String
+  mySubnet1:
+    #Description: 
+    Type: String
+  mySubnet2:
+    #Description: 
+    Type: String
+  #mySecGroup1:
+    #Description: 
+    #Type: String
+  myInstanceType:
+    #Description: Instance Type
+    Type: String
+    Default: 't3.micro'
+  KeyPairName:
+    ConstraintDescription: Must be an existing EC2 Keypair.
+    #Description: x
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    Default: 'aws-dev-key'
+  myAPPport:
+    #Description: 
+    Type: String
+    Default: '3000'
+  AMIimageID:
+    #Description: 
+    Type: String
+  testHostSubnet:
+    Type: String
+    Default: '10.120.0.0/16'
+  AppBucket:
+    Description:
+      The S3 bucket containing app
+    Type: String
+    Default: pasha-test1
+  InstanceProfileARN:
+    Description:
+      The S3 bucket containing app
+    Type: String
+    Default: LabInstanceProfile
+
+Resources:
+  myLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
+      LaunchTemplateData: 
+        BlockDeviceMappings: 
+          - Ebs:
+              VolumeSize: 8
+              VolumeType: gp3
+              DeleteOnTermination: true
+              #Encrypted: true
+            DeviceName: /dev/xvdcz
+        ImageId: !Ref AMIimageID
+        InstanceType: !Ref myInstanceType
+        KeyName: !Ref KeyPairName
+        Monitoring: 
+          Enabled: true
+        SecurityGroupIds: 
+          #- !Ref mySecGroup1
+          - !Ref WebServerSecurityGroup
+        IamInstanceProfile:
+            Name:  !Ref InstanceProfileARN
+        UserData: !Base64 
+          'Fn::Sub': |-
+            #!/bin/bash -xe
+            # setup test app
+            yum update -y
+            yum install -y httpd
+            service httpd start  
+            echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+            cd /tmp/
+            aws s3 cp s3://${AppBucket}/app.zip .
+            unzip app.zip
+            cd app
+            PORT=3000 /usr/local/lib/nodejs/node-v16.13.0-linux-x64/bin/node server.js
+            #npm start
+            
+
+  myASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      TargetGroupARNs:
+        - !Ref myALBTargetGroup
+      AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
+      MinSize: "1"
+      MaxSize: "6"
+      DesiredCapacity: "1"
+      HealthCheckGracePeriod: 300
+      LaunchTemplate:
+        LaunchTemplateId: !Ref myLaunchTemplate
+        Version: !GetAtt myLaunchTemplate.LatestVersionNumber
+      VPCZoneIdentifier:
+        - !Ref mySubnet1
+        - !Ref mySubnet2
+      MetricsCollection: 
+        - Granularity: "1Minute"
+          Metrics: 
+            - "GroupMinSize"
+            - "GroupMaxSize"
+      Tags:
+        - Key: Purpose
+          Value: WebServerGroup
+          PropagateAtLaunch: "false"
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-instance"
+          PropagateAtLaunch: "true"
+
+  AppServerSP:
+    # scale up when the average CPU usage of the group reaches 75% 
+    Type: 'AWS::AutoScaling::ScalingPolicy' 
+    Properties:
+        AutoScalingGroupName: !Ref myASG
+        EstimatedInstanceWarmup: 60
+        PolicyType: TargetTrackingScaling
+        TargetTrackingConfiguration:
+            PredefinedMetricSpecification:
+                PredefinedMetricType: ASGAverageCPUUtilization 
+            TargetValue: 75
+
+  WebServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable HTTP access via port 80
+      VpcId: !Ref myVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref myAPPport
+          ToPort: !Ref myAPPport
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: !Ref myAPPport
+          ToPort: !Ref myAPPport
+          CidrIp: !Ref testHostSubnet
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Load Balancer Security Group
+      VpcId: !Ref myVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: !Ref myAPPport
+        ToPort: !Ref myAPPport
+        CidrIp: !Ref testHostSubnet
+        #SourceSecurityGroupId: !Ref ProxySecurityGroup 
+
+  myALBLoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: !Sub '${AWS::StackName}-alb'
+      Scheme: internal
+      IpAddressType: ipv4   
+      LoadBalancerAttributes: 
+        - Key: idle_timeout.timeout_seconds 
+          Value: 180   
+      Subnets:
+        - !Ref mySubnet1
+        - !Ref mySubnet2
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Type: application          
+
+  myALBTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    #Condition: CreateTG1
+    Properties:
+      Name: !Sub '${AWS::StackName}-tg1'
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      HealthCheckPath: "/"
+      HealthCheckPort: !Ref myAPPport
+      HealthCheckProtocol: HTTP
+      Matcher:
+        HttpCode: 200-499
+      Port:  !Ref myAPPport
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref myVPC
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: 'false'
+        #- Key: stickiness.type
+          #Value: lb_cookie
+        #- Key: stickiness.lb_cookie.duration_seconds
+          #Value: '30'
+
+  myALBListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    #Condition: CreateTG1
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref myALBTargetGroup
+      LoadBalancerArn: !Ref myALBLoadBalancer
+      Port: !Ref myAPPport
+      Protocol: HTTP
+      #Crtificates: 
+         #- CertificateArn:
