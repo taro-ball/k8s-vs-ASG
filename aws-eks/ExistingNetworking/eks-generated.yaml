@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+Resources:
+    # EKSAddon:
+    #     Type: "AWS::EKS::Addon"
+    #     DependsOn: EKSCluster
+    #     Properties:
+    #         AddonName: "kube-proxy"
+    #         AddonVersion: "v1.21.2-eksbuild.2"
+    #         ClusterName: "myEKS4"
+
+    # EKSAddon2:
+    #     Type: "AWS::EKS::Addon"
+    #     DependsOn: EKSCluster
+    #     Properties:
+    #         AddonName: "vpc-cni"
+    #         AddonVersion: "v1.10.1-eksbuild.1"
+    #         ClusterName: "myEKS4"
+
+    # EKSAddon3:
+    #     Type: "AWS::EKS::Addon"
+    #     DependsOn: EKSCluster
+    #     Properties:
+    #         AddonName: "coredns"
+    #         AddonVersion: "v1.8.4-eksbuild.1"
+    #         ClusterName: "myEKS4"
+
+    EKSNodegroup:
+        Type: "AWS::EKS::Nodegroup"
+        DependsOn: EKSCluster
+        Properties:
+            NodegroupName: "nodegroup1eks7"
+            ClusterName: "myEKS4"
+            Version: "1.21"
+            ReleaseVersion: "1.21.5-20211117"
+            ScalingConfig: 
+                MinSize: 1
+                MaxSize: 3
+                DesiredSize: 1
+            InstanceTypes: 
+              - "t3a.small"
+            Subnets: 
+              - "subnet-0c25384165a9979f8"
+              - "subnet-0987a03463e49898b"
+            AmiType: "AL2_x86_64"
+            NodeRole: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+            Labels: {}
+            DiskSize: 20
+            Tags: {}
+            CapacityType: "ON_DEMAND"
+
+    EKSCluster:
+        Type: "AWS::EKS::Cluster"
+        Properties:
+            Name: "myEKS4"
+            RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+            Version: "1.21"
+            ResourcesVpcConfig: 
+                SecurityGroupIds: 
+                  - "sg-0ebe95419404f6fa8"
+                SubnetIds: 
+                  - "subnet-0987a03463e49898b"
+                  - "subnet-0c25384165a9979f8"
+            KubernetesNetworkConfig: 
+                ServiceIpv4Cidr: "10.100.0.0/16"
+
