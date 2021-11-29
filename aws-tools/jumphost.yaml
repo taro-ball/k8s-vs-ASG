@@ -16,17 +16,21 @@ Parameters:
     #Description: x
     Type: 'AWS::EC2::KeyPair::KeyName'
     Default: 'dev-key'
-  AMIimageID:
-    #Description:
-    Type: String
-    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
+  # AMIimageID:
+  #   #Description:
+  #   Type: String
+  #   Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
+  LatestAmiId:
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+      Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs'
+
 
 Resources:
 
   WebServer:
     Type: 'AWS::EC2::Instance'
     Properties:
-      ImageId: !Ref AMIimageID
+      ImageId: !Ref LatestAmiId
       InstanceType: !Ref myInstanceType
       IamInstanceProfile: !Sub "${myInstanceProfile}"
       #    Name:  !Ref myInstanceProfile
@@ -53,7 +57,10 @@ Resources:
           mv /tmp/kubectl /usr/local/bin/
 
           curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          sudo chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
+          chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
+
+          curl -o /usr/bin/hey https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
+          chmod +x /usr/bin/hey 
 
       Tags:
         - Key: Name
