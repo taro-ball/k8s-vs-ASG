@@ -1,0 +1,64 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+# https://github.com/weaveworks/eksctl/blob/main/examples/13-iamserviceaccounts.yaml
+# https://github.com/weaveworks/eksctl/blob/main/examples/15-managed-nodes.yaml
+# https://eksctl.io/usage/autoscaling/
+
+metadata:
+  name: clusterX
+  region: us-east-1
+
+managedNodeGroups:
+  - name: managed-ng-1
+    # minSize: 2
+    # maxSize: 4
+    desiredCapacity: 1
+    volumeSize: 20
+    # ssh:
+    #   allow: true
+    #   publicKeyPath: ~/.ssh/ec2_id_rsa.pub
+    #   # new feature for restricting SSH access to certain AWS security group IDs
+    #   sourceSecurityGroupIds: ["sg-00241fbb12c607007"]
+    labels:
+      role: worker
+      autoscaling: enabled
+    asgMetricsCollection:
+      - granularity: 1Minute
+        metrics:
+          - GroupMinSize
+          - GroupMaxSize
+          - GroupDesiredCapacity
+          - GroupInServiceInstances
+          - GroupPendingInstances
+          - GroupStandbyInstances
+          - GroupTerminatingInstances
+          - GroupTotalInstances
+
+    tags:
+      nodegroup-role: worker
+      # EC2 tags required for cluster-autoscaler auto-discovery
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/clusterX: "owned"
+    iam:
+      withAddonPolicies:
+        externalDNS: true
+        certManager: true
+
+iam:
+  - metadata:
+      name: autoscaler-service
+      namespace: kube-system
+    attachPolicy: # inline policy can be defined along with `attachPolicyARNs`
+      Version: "2012-10-17"
+      Statement:
+      - Effect: Allow
+        Action:
+        - "autoscaling:DescribeAutoScalingGroups"
+        - "autoscaling:DescribeAutoScalingInstances"
+        - "autoscaling:DescribeLaunchConfigurations"
+        - "autoscaling:DescribeTags"
+        - "autoscaling:SetDesiredCapacity"
+        - "autoscaling:TerminateInstanceInAutoScalingGroup"
+        - "ec2:DescribeLaunchTemplateVersions"
+        Resource: '*'
