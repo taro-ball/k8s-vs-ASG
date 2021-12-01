@@ -8,7 +8,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 80
+  - port: 3000
   selector:
     env: dev
 ---
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: taro
-        image: taroball/taro1
+        image: taroball/taro1:v1
         ports:
         - containerPort: 3000
         resources:
