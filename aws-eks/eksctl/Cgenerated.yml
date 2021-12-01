@@ -17,8 +17,8 @@ iam:
 managedNodeGroups:
 - amiFamily: AmazonLinux2
   name: standard-workers
-  instanceType: t3.small
-  desiredCapacity: 2
+  instanceType: t2.micro
+  desiredCapacity: 1
   maxSize: 6
   minSize: 1
   disableIMDSv1: false
