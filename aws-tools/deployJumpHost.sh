@@ -5,7 +5,7 @@ vpcID=`aws ec2 describe-vpcs \
     --query 'Vpcs[*].VpcId' \
     --output text`
 
-sbntID=`aws ec2 describe-subnets --output text --query 'Subnets[0].SubnetId'`
+sbntID=`aws ec2 describe-subnets --output text --query 'Subnets[5].SubnetId'`
 
 aws cloudformation create-stack\
  --disable-rollback --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND\

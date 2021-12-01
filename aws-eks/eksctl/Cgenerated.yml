@@ -1,0 +1,66 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: C999
+  region: us-east-1
+  version: "1.21"
+
+availabilityZones:
+- us-east-1a
+- us-east-1b
+# cloudWatch:
+#   clusterLogging: {}
+iam:
+  vpcResourceControllerPolicy: true
+  withOIDC: false
+
+managedNodeGroups:
+- amiFamily: AmazonLinux2
+  name: standard-workers
+  instanceType: t3.small
+  desiredCapacity: 2
+  maxSize: 6
+  minSize: 1
+  disableIMDSv1: false
+  disablePodIMDS: false
+  iam:
+    withAddonPolicies:
+      autoScaler: true
+      # albIngress: false
+      # appMesh: false
+      # appMeshPreview: false
+      # certManager: false
+      # cloudWatch: false
+      # ebs: false
+      # efs: false
+      # externalDNS: false
+      # fsx: false
+      # imageBuilder: false
+      # xRay: false
+  #instanceSelector: {}
+  labels:
+    alpha.eksctl.io/cluster-name: C999
+    alpha.eksctl.io/nodegroup-name: standard-workers
+  # privateNetworking: false
+  # releaseVersion: ""
+  tags:
+    alpha.eksctl.io/nodegroup-name: standard-workers
+    alpha.eksctl.io/nodegroup-type: managed
+  volumeIOPS: 3000
+  volumeSize: 25
+  volumeThroughput: 125
+  volumeType: gp3
+
+privateCluster:
+  enabled: false
+  skipEndpointCreation: false
+
+vpc:
+  autoAllocateIPv6: false
+  cidr: 192.168.0.0/16
+  clusterEndpoints:
+    privateAccess: false
+    publicAccess: true
+  manageSharedNodeSecurityGroupRules: true
+  nat:
+    gateway: Single
