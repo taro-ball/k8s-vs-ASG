@@ -4,29 +4,29 @@ kind: Service
 metadata:
   name: taro-svc
   labels:
-    env: dev
+    env: taro
 spec:
   type: LoadBalancer
   ports:
   - port: 3000
   selector:
-    env: dev
+    env: taro
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: taro-deployment
   labels:
-    env: dev
+    env: taro
 spec:
   replicas: 1
   selector:
     matchLabels:
-      env: dev
+      env: taro
   template:
     metadata:
       labels:
-        env: dev
+        env: taro
     spec:
       containers:
       - name: taro
