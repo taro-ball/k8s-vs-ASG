@@ -10,7 +10,7 @@ Parameters:
   myInstanceType:
     #Description: Instance Type
     Type: String
-    Default: 't3.small'
+    Default: 't3.medium'
   KeyPairName:
     ConstraintDescription: Must be an existing EC2 Keypair.
     #Description: x
@@ -19,7 +19,7 @@ Parameters:
   # AMIimageID:
   #   #Description:
   #   Type: String
-  #   Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
+  #   Default: ami-123
   LatestAmiId:
       Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
       Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs'
@@ -45,22 +45,25 @@ Resources:
           yum update -y
           yum install -y httpd
           service httpd start  
-          echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+          echo "<html><h1>Hello from JumpHost!</h1></html>" > /var/www/html/test.html
 
-          cd /tmp
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          ./aws/install
+          # cd /tmp
+          # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          # unzip awscliv2.zip
+          # ./aws/install
 
-          curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
-          chmod +x kubectl
-          mv /tmp/kubectl /usr/local/bin/
+          # curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
+          # chmod +x kubectl
+          # mv /tmp/kubectl /usr/local/bin/
 
-          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
+          # curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          # chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
 
           curl -o /usr/bin/hey https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
           chmod +x /usr/bin/hey 
+
+          curl -L https://github.com/fortio/fortio/releases/download/v1.19.0/fortio-linux_x64-1.19.0.tgz \
+          | sudo tar -C / -xvzpf -
 
       Tags:
         - Key: Name
@@ -75,7 +78,12 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 172.0.0.0/8
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
 
 
   myInstanceProfile:

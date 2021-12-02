@@ -21,7 +21,7 @@ Parameters:
     ConstraintDescription: Must be an existing EC2 Keypair.
     #Description: x
     Type: 'AWS::EC2::KeyPair::KeyName'
-    Default: 'aws-dev-key'
+    Default: 'dev-key'
   myAPPport:
     #Description: 
     Type: String
@@ -144,6 +144,11 @@ Resources:
         ToPort: !Ref myAPPport
         CidrIp: !Ref testHostSubnet
         #SourceSecurityGroupId: !Ref ProxySecurityGroup 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
 
   myALBLoadBalancer:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
