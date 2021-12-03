@@ -7,6 +7,8 @@ vpcID=`aws ec2 describe-vpcs \
 
 sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[1].SubnetId'`
 
+set -x
+
 aws cloudformation create-stack\
  --disable-rollback --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND\
  --stack-name jumphost-$1 --template-body file://jumphost.yaml\

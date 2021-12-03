@@ -64,6 +64,7 @@ Resources:
 
           curl -L https://github.com/fortio/fortio/releases/download/v1.19.0/fortio-linux_x64-1.19.0.tgz \
           | sudo tar -C / -xvzpf -
+          fortio server
 
       Tags:
         - Key: Name
