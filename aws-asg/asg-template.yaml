@@ -70,10 +70,16 @@ Resources:
             service httpd start  
             echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
             cd /tmp/
-            aws s3 cp s3://${AppBucket}/app.zip .
+
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            . ~/.nvm/nvm.sh
+            nvm install 16.13.1
+
+            # aws s3 cp s3://${AppBucket}/app.zip .
+            curl -L -o app.zip https://github.com/taro-ball/GemCity/raw/master/other/app7690e01.zip
             unzip app.zip
             cd app
-            PORT=3000 /usr/local/lib/nodejs/node-v16.13.0-linux-x64/bin/node server.js
+            PORT=3000 /usr/local/lib/nodejs/node-v16.13.1-linux-x64/bin/node server.js
             #npm start
             
 
