@@ -66,9 +66,15 @@ Resources:
             #!/bin/bash -xe
             # setup test app
             yum update -y
+            yum install htop -y
+
+            # amazon-linux-extras install nginx1
+            # service nginx start
+
             yum install -y httpd
             service httpd start  
-            echo "<html><h1>Hello from CloudFormation!</h1></html>" > /var/www/html/test.html
+            echo "<html><body><h1>ASGworks!</h1></body></html>" > /var/www/html/test.html
+
             cd /tmp/
 
             # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
@@ -93,6 +99,7 @@ Resources:
     Properties:
       TargetGroupARNs:
         - !Ref myALBTargetGroup
+        - !Ref myALBTargetGroup2
       AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
       MinSize: "1"
       MaxSize: "6"
@@ -202,7 +209,7 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       HealthCheckPath: "/"
-      HealthCheckPort: !Ref myAPPport
+      HealthCheckPort: 80
       HealthCheckProtocol: HTTP
       Matcher:
         HttpCode: 200-499
