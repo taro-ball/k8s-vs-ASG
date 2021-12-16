@@ -105,7 +105,10 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore 
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+        
+
       # Policies:
       #   - PolicyName: !Sub ${AWS::StackName}-InlinePolicy
       #     PolicyDocument:
