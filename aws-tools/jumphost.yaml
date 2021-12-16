@@ -43,7 +43,7 @@ Resources:
           #!/bin/bash -xe
 
           yum update -y
-          yum install -y httpd htop unzip
+          yum install -y httpd
           service httpd start  
           echo "<html><h1>Hello from JumpHost!</h1></html>" > /var/www/html/test.html
 
@@ -65,7 +65,27 @@ Resources:
           curl -L https://github.com/fortio/fortio/releases/download/v1.19.0/fortio-linux_x64-1.19.0.tgz \
           | sudo tar -C / -xvzpf -
           fortio server
-
+    Metadata:
+      AWS::CloudFormation::Init:
+       configSets:
+          batch:
+            - batch_config
+       batch_config:
+            packages:
+              yum:
+                unzip: []
+                jq: []
+                htop: []
+            files: 
+              /tmp/setup.mysql: 
+                content: !Sub |
+                  CREATE DATABASE ${DBName};
+                  CREATE USER '${DBUsername}'@'localhost' IDENTIFIED BY '${DBPassword}';
+                  GRANT ALL ON ${DBName}.* TO '${DBUsername}'@'localhost';
+                  FLUSH PRIVILEGES;
+                mode: "000644"
+                owner: "root"
+                group: "root"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-instance"
