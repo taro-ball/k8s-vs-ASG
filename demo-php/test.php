@@ -1,0 +1,1 @@
+<!DOCTYPE html><html><body><?php echo "This machine is: "; echo gethostname(); ?><?php for($i = 0; $i < 9999; $i++) {$a += $i;}?><?php echo $a;?></body></html>

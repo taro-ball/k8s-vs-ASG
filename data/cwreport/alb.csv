@@ -1,0 +1,16 @@
+Resource Identifier,ActiveConnectionCount (Count),ClientTLSNegotiationErrorCount (Count),ConsumedLCUs (Count),HTTP_Fixed_Response_Count (Count),HTTP_Redirect_Count (Count),HTTP_Redirect_Url_Limit_Exceeded_Count (Count),HTTPCode_ELB_3XX_Count (Count),HTTPCode_ELB_4XX_Count (Count),HTTPCode_ELB_5XX_Count (Count),HTTPCode_ELB_500_Count (Count),HTTPCode_ELB_502_Count (Count),HTTPCode_ELB_503_Count (Count),HTTPCode_ELB_504_Count (Count),IPv6ProcessedBytes (Count),IPv6RequestCount (Count),NewConnectionCount (Count),ProcessedBytes (Count),RejectedConnectionCount (Count),RequestCount (Count),RuleEvaluations (Count)
+app/hip-nhi-mdmalb-alb/4ce265385c8be98a,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-hpi-mdmalb-alb/5ae49e650314ed07,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-nhi-app-alb/8a2543545729d59f,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-hpi-app-alb/5eeb86be8af8556f,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-hpi-hpifhir-alb/a74d4a3b26fcb61e,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-nes-app-alb/8752c09a907f05ad,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-com-app-alb/b060e6c91830933a,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-kibana-alb/50d095b49c457ea5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-web-external-mock-gateway/af35953fe06febf0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-hpi-esb-alb/16f3b6fb7ab6678a,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-com-web-alb/70420b064bec58f1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-nhi-esb-alb/3af1deb0dc27859c,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-nhi-esamservers-alb/4f52eef6d9c3c7ea,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-nes-esb-alb/5d6e84af2726c2c5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+app/hip-com-happroxy-nlb-alb/0404a03bdef897b5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

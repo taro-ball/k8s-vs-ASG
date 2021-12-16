@@ -1,0 +1,26 @@
+{
+    "MetricDataQueries": [
+        {
+            "Id": "myRequest",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/EC2",
+                    "MetricName": "CPUUtilization",
+                    "Dimensions": [
+                        {
+                            "Name": "AutoScalingGroupName",
+                            "Value": "hip-nes-esb-asg"
+                        }
+                    ]
+                },
+                "Period": 3600,
+                "Stat": "Average",
+                "Unit": "Bytes"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        }
+    ],
+    "StartTime": "2021-12-14T5:00:0000",
+    "EndTime": "2021-12-14T8:12:0000"
+}

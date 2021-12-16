@@ -72,14 +72,13 @@ Resources:
             # service nginx start
 
             yum install -y httpd
-            amazon-linux-extras install -y php7.2
+            amazon-linux-extras install -y php7.3
 
             service httpd start  
             echo "<html><body><h1>ASGworks!</h1></body></html>" > /var/www/html/test.html
 
             # get timing: https://github.com/simonebrunozzi-zz/simplewebpage2/blob/master/cpu-stress-test.php
-            echo '<!DOCTYPE html><html><body><?php echo "This machine is: "; echo gethostname(); ?>
-             <?php for($i = 0; $i < 9999; $i++) {$a += $i;}?><?php echo $a;?></body></html>'  > /var/www/html/test.php
+            echo '<!DOCTYPE html><html><body><?php echo "This machine is: "; echo gethostname(); ?><?php for($i = 0; $i < 9999; $i++) {$a += $i;}?><?php echo $a;?></body></html>'  > /var/www/html/test.php
 
             cd /tmp/
 
