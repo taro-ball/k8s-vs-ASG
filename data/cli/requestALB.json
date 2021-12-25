@@ -1,0 +1,25 @@
+{
+    "MetricDataQueries": [
+        {
+            "Id": "myRequest",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "RequestCount",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancer",
+                            "Value": "app/hip-com-app-alb/b060e6c91830933a"
+                        }
+                    ]
+                },
+                "Period": 300,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        }
+    ],
+    "StartTime": "2021-12-23T18:00:0000",
+    "EndTime": "2021-12-24T8:00:0000"
+}
