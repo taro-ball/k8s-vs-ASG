@@ -1,7 +1,7 @@
 {
     "MetricDataQueries": [
         {
-            "Id": "myRequest",
+            "Id": "requestALB_json",
             "MetricStat": {
                 "Metric": {
                     "Namespace": "AWS/ApplicationELB",
