@@ -42,6 +42,9 @@ Resources:
         'Fn::Sub': |-
           #!/bin/bash -xe
 
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServer --configsets batch --region ${AWS::Region}
+          # debug with: cat /var/log/cloud-init-output.log
+          echo 'export PS1="\[\e[0;2m\]win[\[\e[0;2m\]\t\[\e[0;2m\]]\[\e[0;32m\]\W\[\e[0m\]\$\[\e[0m\] "' > /etc/bashrc
           yum update -y
           yum install -y httpd
           service httpd start  
@@ -79,16 +82,16 @@ Resources:
             files: 
               /tmp/setup.mysql: 
                 content: !Sub |
-                  CREATE DATABASE ${DBName};
-                  CREATE USER '${DBUsername}'@'localhost' IDENTIFIED BY '${DBPassword}';
-                  GRANT ALL ON ${DBName}.* TO '${DBUsername}'@'localhost';
+                  CREATE DATABASE ;
+                  CREATE USER '';
+                  GRANT ALL ON '@'localhost';
                   FLUSH PRIVILEGES;
-                mode: "000644"
+                mode: "777777"
                 owner: "root"
                 group: "root"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-instance"
+    Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-instance"
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
