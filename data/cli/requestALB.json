@@ -1,7 +1,7 @@
 {
     "MetricDataQueries": [
         {
-            "Id": "requestALB_json",
+            "Id": "requestCount",
             "MetricStat": {
                 "Metric": {
                     "Namespace": "AWS/ApplicationELB",
@@ -9,7 +9,64 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancer",
-                            "Value": "app/hip-com-app-alb/b060e6c91830933a"
+                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                        }
+                    ]
+                },
+                "Period": 300,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "targetResponseTime",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "TargetResponseTime",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancer",
+                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                        }
+                    ]
+                },
+                "Period": 300,
+                "Stat": "p95"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "activeConnectionCount",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "ActiveConnectionCount",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancer",
+                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                        }
+                    ]
+                },
+                "Period": 300,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "consumedLCUs",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "ConsumedLCUs",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancer",
+                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
                         }
                     ]
                 },
@@ -20,6 +77,6 @@
             "ReturnData": true
         }
     ],
-    "StartTime": "2021-12-23T18:00:0000",
-    "EndTime": "2021-12-24T8:00:0000"
+    "StartTime": "2021-12-23T19:00:0000",
+    "EndTime": "2021-12-23T23:30:0000"
 }
