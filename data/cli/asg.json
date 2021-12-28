@@ -1,26 +1,25 @@
 {
     "MetricDataQueries": [
         {
-            "Id": "myRequest",
+            "Id": "groupDesiredCapacity",
             "MetricStat": {
                 "Metric": {
-                    "Namespace": "AWS/EC2",
-                    "MetricName": "CPUUtilization",
+                    "Namespace": "AWS/AutoScaling",
+                    "MetricName": "GroupInServiceCapacity",
                     "Dimensions": [
                         {
                             "Name": "AutoScalingGroupName",
-                            "Value": "hip-nes-esb-asg"
+                            "Value": "asg-1-myASG"
                         }
                     ]
                 },
-                "Period": 3600,
-                "Stat": "Average",
-                "Unit": "Bytes"
+                "Period": 60,
+                "Stat": "Maximum"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
         }
     ],
-    "StartTime": "2021-12-14T5:00:0000",
-    "EndTime": "2021-12-14T8:12:0000"
+    "StartTime": "2021-12-28T1:49:0000",
+    "EndTime": "2021-12-28T2:10:0000"
 }

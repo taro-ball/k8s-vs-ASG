@@ -9,4 +9,4 @@ set -x
 
 aws elbv2 describe-load-balancers --region us-east-1 --query 'LoadBalancers[*].DNSName' --output text
 
-fortio load -a -c 150 -n 2000000 -qps -1 -r 0.01 http://internal-asg-2-alb-510343582.us-east-1.elb.amazonaws.com:88/test.html
+fortio load -a -c 50 -n 2000000 -qps -1 -r 0.01 http://internal-asg-2-alb-510343582.us-east-1.elb.amazonaws.com:88/test.html

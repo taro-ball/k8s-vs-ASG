@@ -44,7 +44,7 @@ Resources:
 
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServer --configsets batch --region ${AWS::Region}
           # debug with: cat /var/log/cloud-init-output.log
-          echo 'export PS1="\[\e[0;2m\]win[\[\e[0;2m\]\t\[\e[0;2m\]]\[\e[0;32m\]\W\[\e[0m\]\$\[\e[0m\] "' > /etc/bashrc
+          echo 'export PS1="\[\e[0;2m\]tstr[\[\e[0;2m\]\t\[\e[0;2m\]]\[\e[0;32m\]\W\[\e[0m\]\$\[\e[0m\] "' > /etc/bashrc
           yum update -y
           yum install -y httpd
           service httpd start  
@@ -89,9 +89,9 @@ Resources:
                 mode: "777777"
                 owner: "root"
                 group: "root"
-    Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-instance"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-instance"
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
