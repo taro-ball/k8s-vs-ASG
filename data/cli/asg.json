@@ -5,6 +5,25 @@
             "MetricStat": {
                 "Metric": {
                     "Namespace": "AWS/AutoScaling",
+                    "MetricName": "GroupDesiredCapacity",
+                    "Dimensions": [
+                        {
+                            "Name": "AutoScalingGroupName",
+                            "Value": "asg-1-myASG"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Maximum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "groupInServiceCapacity",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/AutoScaling",
                     "MetricName": "GroupInServiceCapacity",
                     "Dimensions": [
                         {
@@ -18,8 +37,27 @@
             },
             "Label": "myRequestLabel",
             "ReturnData": true
+        },
+        {
+            "Id": "cpuUtilization",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/EC2",
+                    "MetricName": "CPUUtilization",
+                    "Dimensions": [
+                        {
+                            "Name": "AutoScalingGroupName",
+                            "Value": "asg-1-myASG"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Average"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
         }
     ],
     "StartTime": "2021-12-28T1:49:0000",
-    "EndTime": "2021-12-28T2:10:0000"
+    "EndTime": "2021-12-28T2:30:0000"
 }
