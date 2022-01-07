@@ -107,7 +107,7 @@ Resources:
         - !Ref myALBTargetGroup2
       AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
       MinSize: "1"
-      MaxSize: "6"
+      MaxSize: "4"
       DesiredCapacity: "1"
       HealthCheckGracePeriod: 300
       LaunchTemplate:
@@ -136,7 +136,7 @@ Resources:
         TargetTrackingConfiguration:
             PredefinedMetricSpecification:
                 PredefinedMetricType: ASGAverageCPUUtilization 
-            TargetValue: 75
+            TargetValue: 70
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'

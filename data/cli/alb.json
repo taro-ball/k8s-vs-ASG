@@ -9,11 +9,11 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancer",
-                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                            "Value": "app/asg-1-alb/4a3a5b6db2bea518"
                         }
                     ]
                 },
-                "Period": 300,
+                "Period": 60,
                 "Stat": "Sum"
             },
             "Label": "myRequestLabel",
@@ -28,11 +28,11 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancer",
-                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                            "Value": "app/asg-1-alb/4a3a5b6db2bea518"
                         }
                     ]
                 },
-                "Period": 300,
+                "Period": 60,
                 "Stat": "p95"
             },
             "Label": "myRequestLabel",
@@ -47,11 +47,11 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancer",
-                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                            "Value": "app/asg-1-alb/4a3a5b6db2bea518"
                         }
                     ]
                 },
-                "Period": 300,
+                "Period": 60,
                 "Stat": "Sum"
             },
             "Label": "myRequestLabel",
@@ -66,19 +66,19 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancer",
-                            "Value": "app/myapp-alb/4f52eef6d9c3c7ea"
+                            "Value": "app/asg-1-alb/4a3a5b6db2bea518"
                         }
                     ]
                 },
-                "Period": 300,
+                "Period": 60,
                 "Stat": "Sum"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
         }
     ],
-    "StartTime": "2021-12-23T19:00:0000",
-    "EndTime": "2021-12-23T23:30:0000",
+    "StartTime": "2022-01-07T7:20:0000",
+    "EndTime": "2022-01-07T7:56:0000",
     "ScanBy": "TimestampAscending"
     
 }

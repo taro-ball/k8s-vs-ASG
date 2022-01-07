@@ -58,6 +58,7 @@
             "ReturnData": true
         }
     ],
-    "StartTime": "2021-12-28T1:49:0000",
-    "EndTime": "2021-12-28T2:30:0000"
+    "StartTime": "2022-01-07T7:20:0000",
+    "EndTime": "2022-01-07T7:56:0000",
+    "ScanBy": "TimestampAscending"
 }
