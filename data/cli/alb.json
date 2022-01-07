@@ -78,5 +78,7 @@
         }
     ],
     "StartTime": "2021-12-23T19:00:0000",
-    "EndTime": "2021-12-23T23:30:0000"
+    "EndTime": "2021-12-23T23:30:0000",
+    "ScanBy": "TimestampAscending"
+    
 }
