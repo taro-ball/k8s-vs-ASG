@@ -5,5 +5,5 @@ aws cloudwatch get-metric-data --cli-input-json file://asg.json --region us-east
 # get results
 sudo zip -r /var/www/html/foo.zip .
 
-# then you can
-http://100.26.180.59/foo.zip
+# then you can point Ur browser to:
+# http://100.26.180.59/foo.zip
