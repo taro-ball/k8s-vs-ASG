@@ -68,6 +68,9 @@ Resources:
           curl -L https://github.com/fortio/fortio/releases/download/v1.19.0/fortio-linux_x64-1.19.0.tgz \
           | sudo tar -C / -xvzpf -
           fortio server
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-instance"
     Metadata:
       AWS::CloudFormation::Init:
        configSets:
@@ -89,9 +92,6 @@ Resources:
                 mode: "777777"
                 owner: "root"
                 group: "root"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-instance"
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -100,7 +100,7 @@ Resources:
       VpcId: !Ref myVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
+          FromPort: 20
           ToPort: 8080
           CidrIp: 0.0.0.0/0
 

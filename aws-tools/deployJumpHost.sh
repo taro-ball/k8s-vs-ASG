@@ -5,7 +5,7 @@ vpcID=`aws ec2 describe-vpcs \
     --query 'Vpcs[*].VpcId' \
     --output text`
 
-sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[1].SubnetId'`
+sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[5].SubnetId'`
 
 set -x
 
