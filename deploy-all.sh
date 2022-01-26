@@ -2,7 +2,7 @@
 set -x
 
 # write new key only if successful
-pem=$(aws ec2 create-key-pair --key-name dev-key) && echo "$pem" > .exclDEV-Key.pem
+pem=$(aws ec2 create-key-pair --key-name dev-key) && echo "$pem" | jq --raw-output '.KeyMaterial' > .exclDEV-Key.pem
 
 cd aws-tools
 ./deployJumpHost.sh 1
