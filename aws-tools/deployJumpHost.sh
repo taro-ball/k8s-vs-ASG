@@ -5,7 +5,12 @@ vpcID=`aws ec2 describe-vpcs \
     --query 'Vpcs[*].VpcId' \
     --output text`
 
-sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[5].SubnetId'`
+# if CloudFormation errors with no available t3.medium instances 
+# then pick any except A and B
+# Usually 2-5, but can check with:
+# aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[*].[AvailabilityZone,SubnetId]'
+
+sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[2].SubnetId'`
 
 set -x
 
