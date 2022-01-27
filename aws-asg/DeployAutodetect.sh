@@ -13,7 +13,7 @@ set -x
 
 aws cloudformation create-stack\
  --disable-rollback --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND\
- --stack-name asg-$1 --template-body file://asg-template.yaml\
+ --stack-name asg-$1 --template-body file://asg-template-classicELB.yaml\
  --parameters \
  ParameterKey=myVPC,ParameterValue=${vpcID}\
  ParameterKey=mySubnet1,ParameterValue=${sbnt1ID}\
