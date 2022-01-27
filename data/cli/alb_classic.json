@@ -1,0 +1,84 @@
+{
+    "MetricDataQueries": [
+        {
+            "Id": "requestCount",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "RequestCount",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancerName",
+                            "Value": "a7a1efd2c11bf445e9ca2076ccfd8c16"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "targetResponseTime",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "TargetResponseTime",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancerName",
+                            "Value": "a7a1efd2c11bf445e9ca2076ccfd8c16"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "p95"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "activeConnectionCount",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "ActiveConnectionCount",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancer",
+                            "Value": "a7a1efd2c11bf445e9ca2076ccfd8c16"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "consumedLCUs",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "ConsumedLCUs",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancerName",
+                            "Value": "a7a1efd2c11bf445e9ca2076ccfd8c16"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        }
+    ],
+    "StartTime": "2022-01-26T6:03:0000",
+    "EndTime": "2022-01-26T7:15:0000",
+    "ScanBy": "TimestampAscending"
+    
+}
