@@ -19,7 +19,7 @@ managedNodeGroups:
   name: standard-workers
   instanceType: t3.medium
   desiredCapacity: 1
-  maxSize: 6
+  maxSize: 4
   minSize: 1
   disableIMDSv1: false
   disablePodIMDS: false
