@@ -10,7 +10,8 @@ kubectl apply -f apache.yaml
 
 # kubectl autoscale deployment taro-deployment --cpu-percent=70 --min=1 --max=10
 # kubectl autoscale deployment nginx-deployment --cpu-percent=70 --min=1 --max=10
-kubectl autoscale deployment apache-deployment --cpu-percent=50 --min=1 --max=25
+kubectl autoscale deployment apache-deployment --cpu-percent=50 --min=1 --max=8
+# kubectl delete horizontalpodautoscaler.autoscaling/apache-deployment
 
 kubectl get pods --all-namespaces
 kubectl get deployments
