@@ -1,0 +1,35 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::206406752358:role/eksctl-C888-cluster-ServiceRole-1A921J4VKUSNO
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+  mapUsers: |
+    - userarn: arn:aws:iam::206406752358:user/adm
+      username: adm
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::206406752358:user/pasha
+      username: pasha
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::206406752358:user/cloud_user
+      username: cloud_user
+      groups:
+        - system:masters
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"mapRoles":"- rolearn: arn:aws:iam::206406752358:role/eksctl-C888-cluster-ServiceRole-1A921J4VKUSNO\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"aws-auth","namespace":"kube-system"}}
+  creationTimestamp: "2022-01-27T20:33:48Z"
+  name: aws-auth
+  namespace: kube-system
+  resourceVersion: "23016"
+  uid: ad9d5542-c35c-4064-a75d-a465837cdb1e
