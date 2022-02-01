@@ -1,0 +1,1 @@
+kubectl get deployment -o json | jq '{ "time":now | strftime("%a %b %d, %Y %Z %H:%M:%S"),"readyReplicas": .items[0].status.readyReplicas, "replicas": .items[0].status.replicas, "name": .items[0].metadata.name}'
