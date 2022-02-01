@@ -4,8 +4,8 @@ echo copying to $ip
 # remember to `cd aws-thesis/data/cli`
 scp -o StrictHostKeyChecking=no -r $PWD/ ec2-user@${ip}:/tmp
 # if no ssh config then set key explicitly: -i ../../.exclDEV-Key.pem
-#then
-# on jh
+# then
+# on jh (eg from vsode terminal)
 sudo chmod -R a+rw /tmp/
 sudo cp -r /home/ssm-user/2* /tmp/cli
 
