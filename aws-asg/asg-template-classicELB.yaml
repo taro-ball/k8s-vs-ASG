@@ -72,13 +72,13 @@ Resources:
             # service nginx start
 
             yum install -y httpd
-            amazon-linux-extras install -y php7.3
+            # amazon-linux-extras install -y php7.3
 
-            service httpd start  
+            # service httpd start  
             echo "<html><body><h1>ASGworks!</h1></body></html>" > /var/www/html/test.html
 
             # get timing: https://github.com/simonebrunozzi-zz/simplewebpage2/blob/master/cpu-stress-test.php
-            echo '<!DOCTYPE html><html><body><?php echo "This machine is: "; echo gethostname(); ?><?php for($i = 0; $i < 9999; $i++) {$a += $i;}?><?php echo $a;?></body></html>'  > /var/www/html/test.php
+            # echo '<!DOCTYPE html><html><body><?php echo "This machine is: "; echo gethostname(); ?><?php for($i = 0; $i < 9999; $i++) {$a += $i;}?><?php echo $a;?></body></html>'  > /var/www/html/test.php
 
             cd /tmp/
 
@@ -102,9 +102,6 @@ Resources:
   myASG:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      TargetGroupARNs:
-        - !Ref myALBTargetGroup
-        - !Ref myALBTargetGroup2
       LoadBalancerNames:
         - !Ref myClassicLoadBalancer
       AutoScalingGroupName: !Sub "${AWS::StackName}-myASG"
@@ -138,7 +135,7 @@ Resources:
         TargetTrackingConfiguration:
             PredefinedMetricSpecification:
                 PredefinedMetricType: ASGAverageCPUUtilization 
-            TargetValue: 70
+            TargetValue: 50
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -167,22 +164,6 @@ Resources:
         CidrIp: !Ref testHostSubnet
         #SourceSecurityGroupId: !Ref ProxySecurityGroup 
 
-  myALBLoadBalancer:
-    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
-    Properties:
-      Name: !Sub '${AWS::StackName}-alb'
-      Scheme: internal
-      IpAddressType: ipv4   
-      LoadBalancerAttributes: 
-        - Key: idle_timeout.timeout_seconds 
-          Value: 180   
-      Subnets:
-        - !Ref mySubnet1
-        - !Ref mySubnet2
-      SecurityGroups:
-        - !Ref ALBSecurityGroup
-      Type: application          
-
   myClassicLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
     Properties:
@@ -194,92 +175,23 @@ Resources:
         - !Ref mySubnet2
       Scheme: internal
       Listeners:
-      - LoadBalancerPort: 80
-        InstancePort: 80
-        Protocol: HTTP
+        - LoadBalancerPort: 80
+          InstancePort: 80
+          Protocol: HTTP
+        - LoadBalancerPort: 3000
+          InstancePort: 3000
+          Protocol: HTTP
       HealthCheck:
         Target:
           Fn::Join:
           - ''
           - - 'HTTP:'
-            - '80'
-            - "/test.html"
+            - '3000'
+            - "/"
         HealthyThreshold: '5'
         UnhealthyThreshold: '3'
         Interval: '30'
         Timeout: '5'
-
-  myALBTargetGroup:
-    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
-    #Condition: CreateTG1
-    Properties:
-      Name: !Sub '${AWS::StackName}-tg1'
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      HealthCheckPath: "/"
-      HealthCheckPort: !Ref myAPPport
-      HealthCheckProtocol: HTTP
-      Matcher:
-        HttpCode: 200-499
-      Port:  !Ref myAPPport
-      Protocol: HTTP
-      UnhealthyThresholdCount: 5
-      VpcId: !Ref myVPC
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: 'false'
-        #- Key: stickiness.type
-          #Value: lb_cookie
-        #- Key: stickiness.lb_cookie.duration_seconds
-          #Value: '30'
-  myALBTargetGroup2:
-    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
-    #Condition: CreateTG1
-    Properties:
-      Name: !Sub '${AWS::StackName}-tg2'
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      HealthCheckPath: "/"
-      HealthCheckPort: 80
-      HealthCheckProtocol: HTTP
-      Matcher:
-        HttpCode: 200-499
-      Port:  80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 5
-      VpcId: !Ref myVPC
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: 'false'
-
-  myALBListener:
-    Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    #Condition: CreateTG1
-    Properties:
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref myALBTargetGroup
-      LoadBalancerArn: !Ref myALBLoadBalancer
-      Port: !Ref myAPPport
-      Protocol: HTTP
-      #Crtificates: 
-         #- CertificateArn:
-
-  myALBListener2:
-    Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    #Condition: CreateTG1
-    Properties:
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref myALBTargetGroup2
-      LoadBalancerArn: !Ref myALBLoadBalancer
-      Port: 88
-      Protocol: HTTP
-      #Crtificates: 
-         #- CertificateArn:
-
   myInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: 
