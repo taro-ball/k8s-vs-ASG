@@ -19,7 +19,7 @@ metadata:
   labels:
     env: taro
 spec:
-  replicas: 1
+  replicas: 8
   selector:
     matchLabels:
       env: taro
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: taro
-        image: taroball/taro1:7690e01
+        image: taroball/taro1:appd9f52db
         ports:
         - containerPort: 3000
         resources:
