@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: taro
-        image: taroball/taro1:appd9f52db
+        image: taroball/taro1:smplc3393f8
         ports:
         - containerPort: 3000
         resources:

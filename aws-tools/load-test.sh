@@ -28,7 +28,9 @@ echo $lb;cd;pwd; curl $lb:3000
 fortio load -a -c 50 -n 2000000 -qps -1 -r 0.01 -labels "hpa24 etc" http://$alb:88/test.html
 fortio load -a -c 80 -t 600s -qps -1 -r 0.01 http://$lb:88/test.html
 fortio load -a -c 80 -t 600s -qps -1 -r 0.01 http://$lb:3000
-fortio load -a -c 80 -t 600s -qps -1 -r 0.01 -labels "warmup" http://$lb:3000
+fortio load -a -c 15 -t 45s -qps -1 -r 0.01 -labels "warmup" http://$lb:3000
+
+ for((i=10;i<=20;i+=1)); do fortio load -a -c 15 -t 60s -qps -1 -r 0.01 -labels "warmup" http://$lb:3000?n=9999; done
 -allow-initial-errors
 # quick check
 egrep -rni QPS\|Threads\|Count *
