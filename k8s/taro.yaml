@@ -19,7 +19,7 @@ metadata:
   labels:
     env: taro
 spec:
-  replicas: 8
+  replicas: 1
   selector:
     matchLabels:
       env: taro

@@ -133,7 +133,7 @@ Resources:
         TargetTrackingConfiguration:
             PredefinedMetricSpecification:
                 PredefinedMetricType: ASGAverageCPUUtilization 
-            TargetValue: 50
+            TargetValue: 45
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -186,10 +186,10 @@ Resources:
           - - 'HTTP:'
             - '3000'
             - "/"
-        HealthyThreshold: '5'
-        UnhealthyThreshold: '3'
-        Interval: '30'
-        Timeout: '5'
+        HealthyThreshold: '2'
+        UnhealthyThreshold: '9'
+        Interval: '5'
+        Timeout: '4'
   myInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: 
