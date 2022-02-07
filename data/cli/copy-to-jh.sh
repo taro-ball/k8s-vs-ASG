@@ -7,7 +7,7 @@ scp -o StrictHostKeyChecking=no -r $PWD/ ec2-user@${ip}:/tmp
 # then
 # on jh (eg from vsode terminal)
 sudo chmod -R a+rw /tmp/
-sudo cp -r /home/ssm-user/* /tmp/cli
+sudo sh -c "cp -r /home/ssm-user/* /tmp/cli"
 
 # and back
 ip=`aws ec2 describe-instances --filters Name=tag-value,Values=jumphost-1 --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text`

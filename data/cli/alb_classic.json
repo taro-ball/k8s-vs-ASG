@@ -9,7 +9,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "a88ff87a6575a43e5857804e2ff13a3f"
+                            "Value": "asg-1-lb"
                         }
                     ]
                 },
@@ -28,7 +28,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "a88ff87a6575a43e5857804e2ff13a3f"
+                            "Value": "asg-1-lb"
                         }
                     ]
                 },
@@ -47,12 +47,12 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "a88ff87a6575a43e5857804e2ff13a3f"
+                            "Value": "asg-1-lb"
                         }
                     ]
                 },
                 "Period": 60,
-                "Stat": "Sum"
+                "Stat": "Average"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
@@ -66,19 +66,19 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "a88ff87a6575a43e5857804e2ff13a3f"
+                            "Value": "asg-1-lb"
                         }
                     ]
                 },
                 "Period": 60,
-                "Stat": "Sum"
+                "Stat": "Maximum"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
         }
     ],
-    "StartTime": "2022-01-27T20:46:0000",
-    "EndTime": "2022-01-27T22:30:0000",
+    "StartTime": "2022-02-05T21:33:0000",
+    "EndTime": "2022-02-06T00:16:0000",
     "ScanBy": "TimestampAscending"
     
 }
