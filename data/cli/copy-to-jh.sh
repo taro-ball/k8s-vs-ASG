@@ -10,7 +10,7 @@ sudo chmod -R a+rw /tmp/
 sudo sh -c "cp -r /home/ssm-user/* /tmp/cli"
 
 # and back
-ip=`aws ec2 describe-instances --filters Name=tag-value,Values=jumphost-1 --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text`
+ip=`aws ec2 describe-instances --filters Name=tag-value,Values=jumphost* --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text`
 mydate=$(date +"%Y-%m-%d-%H-%M")
 echo copying from $ip to $mydate
 mkdir ~/run${mydate}
