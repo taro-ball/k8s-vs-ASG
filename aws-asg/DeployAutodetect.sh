@@ -5,8 +5,8 @@ vpcID=`aws ec2 describe-vpcs \
     --query 'Vpcs[*].VpcId' \
     --output text`
 
-sbnt1ID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[1].SubnetId'`
-sbnt2ID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[2].SubnetId'`
+sbnt1ID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'sort_by(Subnets, &AvailabilityZone)[0].SubnetId'`
+sbnt2ID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'sort_by(Subnets, &AvailabilityZone)[1].SubnetId'`
 AMI=`aws ssm get-parameters --names '//aws\service\ami-amazon-linux-latest\amzn2-ami-hvm-x86_64-gp2' --query 'Parameters[0].[Value]' --output text`
 
 set -x

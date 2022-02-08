@@ -10,7 +10,7 @@ vpcID=`aws ec2 describe-vpcs \
 # Usually 2-5, but can check with:
 # aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[*].[AvailabilityZone,SubnetId]'
 
-sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'Subnets[2].SubnetId'`
+sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --output text --query 'sort_by(Subnets, &AvailabilityZone)[2].SubnetId'`
 
 set -x
 
