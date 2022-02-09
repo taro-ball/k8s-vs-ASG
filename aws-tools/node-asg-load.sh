@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-warmup_url='$warmup_url'
-testing_url='$testing_url'
+warmup_url='3000?n=5555'
+testing_url='3000?n=9999'
 
 echo start warmup: $(date) >> dates.txt
 set -x
