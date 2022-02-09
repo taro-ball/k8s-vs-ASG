@@ -133,7 +133,7 @@ Resources:
         TargetTrackingConfiguration:
             PredefinedMetricSpecification:
                 PredefinedMetricType: ASGAverageCPUUtilization 
-            TargetValue: 45
+            TargetValue: 35
 
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
