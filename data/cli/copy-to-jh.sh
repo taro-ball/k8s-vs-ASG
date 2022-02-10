@@ -2,6 +2,7 @@
 ip=`aws ec2 describe-instances --filters Name=tag-value,Values=jumphost-1 --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text`
 echo copying to $ip
 # remember to `cd data/cli`
+sed -i -r 's/(\b[0-9]{1,3}\.){3}[0-9]{1,3}\b'/"$ip"/ /c/Users/pa/.ssh/config
 scp -o StrictHostKeyChecking=no -r $PWD/ ec2-user@${ip}:/tmp
 # if no ssh config then set key explicitly: -i ../../.exclDEV-Key.pem
 # then
