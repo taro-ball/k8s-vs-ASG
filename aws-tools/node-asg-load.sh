@@ -8,7 +8,9 @@ testing_url='80/test.html'
 cpu_perc=70
 warmup_min_threads=80
 warmup_max_threads=90
-warmup_cycle_sec=60
+warmup_cycle_sec=120
+scaling_sec=900
+max_capacity=3
 fi
 
 if [ "$app" == "node" ]; then
@@ -18,6 +20,8 @@ cpu_perc=35
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
+scaling_sec=750
+max_capacity=4
 fi
 
 echo start warmup: $(date) >> dates.txt
@@ -30,18 +34,19 @@ lb=`aws elb describe-load-balancers $region_param --query 'LoadBalancerDescripti
 myasg=`aws autoscaling describe-auto-scaling-groups $region_param --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
 mypolicy_name=`aws autoscaling describe-policies $region_param --query "ScalingPolicies[*].PolicyName" --output text | sed 's/\s\+/\n/g' | grep asg`
 policy_json='{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue":'" ${cpu_perc}.0, "'"DisableScaleIn": false}'
-# scale to max
-echo scaling to 4;
-aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-name $myasg --desired-capacity 4
 
-# set initial policy
-aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
+# set max, scale to max
+echo scaling to $max_capacity;
+aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-name $myasg --desired-capacity $max_capacity --max-size $max_capacity
+
+# set initial policy to keep instance count up
+aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 1.0, "DisableScaleIn": false}'
 
 # quick test
 cd;pwd; curl http://$lb:$warmup_url; echo
 
 # LB warmup
-for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "warmup" http://$lb:$warmup_url; done
+for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do sleep 60; fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "warmup" http://$lb:$warmup_url; done
 
 # performance
 for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "performance-${i}" http://$lb:$testing_url; done
@@ -62,7 +67,7 @@ do
         # pack to initial policy
         aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
 
-    fortio load -a -c $warmup_max_threads -t 780s -qps -1 -r 0.01 -labels "scaling-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "scaling-${i}" http://$lb:$testing_url
 done
 echo end: $(date) >> dates.txt
 
