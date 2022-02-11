@@ -52,7 +52,7 @@
                     ]
                 },
                 "Period": 60,
-                "Stat": "Average"
+                "Stat": "p99"
             },
             "Label": "myRequestLabel",
             "ReturnData": true

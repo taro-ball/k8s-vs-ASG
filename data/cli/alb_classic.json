@@ -33,7 +33,7 @@
                     ]
                 },
                 "Period": 60,
-                "Stat": "p95"
+                "Stat": "Average"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
@@ -72,6 +72,25 @@
                 },
                 "Period": 60,
                 "Stat": "Maximum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
+            "Id": "backendConnectionErrors",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "BackendConnectionErrors",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancerName",
+                            "Value": "asg-1-lb"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Sum"
             },
             "Label": "myRequestLabel",
             "ReturnData": true
