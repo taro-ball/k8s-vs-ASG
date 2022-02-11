@@ -1,19 +1,19 @@
 #!/usr/bin/bash
 
-app="apache"
+app="apache3"
 
-if [ "$app" == "apache" ]; then
+if [ "$app" == "apache3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
 cpu_perc=70
-warmup_min_threads=80
-warmup_max_threads=90
+warmup_min_threads=65
+warmup_max_threads=75
 warmup_cycle_sec=120
-scaling_sec=900
+scaling_sec=800
 max_capacity=3
 fi
 
-if [ "$app" == "node" ]; then
+if [ "$app" == "node4" ]; then
 warmup_url='3000?n=5555'
 testing_url='3000?n=9999'
 cpu_perc=35
@@ -46,10 +46,10 @@ aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myas
 cd;pwd; curl http://$lb:$warmup_url; echo
 
 # LB warmup
-for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do sleep 60; fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "warmup" http://$lb:$warmup_url; done
+for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url; sleep 60 ; done
 
 # performance
-for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "performance-${i}" http://$lb:$testing_url; done
+for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url; done
 
 echo start scaling: $(date) >> dates.txt
 # scaling
@@ -67,7 +67,7 @@ do
         # pack to initial policy
         aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
 
-    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "scaling-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
 echo end: $(date) >> dates.txt
 
