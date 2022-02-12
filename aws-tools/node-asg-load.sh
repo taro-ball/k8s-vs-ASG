@@ -24,7 +24,7 @@ scaling_sec=750
 max_capacity=4
 fi
 
-echo start warmup: $(date) >> dates.txt
+echo t_start=$(date +%FT%T:0000) >> dates.txt
 set -x
 
 region_param='--region us-east-1'
@@ -51,7 +51,7 @@ for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $
 # performance
 for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url; done
 
-echo start scaling: $(date) >> dates.txt
+echo t_scaling=$(date +%FT%T:0000) >> dates.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
@@ -69,7 +69,7 @@ do
 
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
-echo end: $(date) >> dates.txt
+echo t_end=$(date +%FT%T:0000) >> dates.txt
 
 
 

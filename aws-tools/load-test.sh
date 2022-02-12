@@ -7,6 +7,12 @@ set -x
 # -qps -1: max queries per second
 # -r 0.01: Resolution of the histogram lowest buckets in seconds
 
+# 
+chmod +x load.sh
+screen
+# ctrl+a > ctrl + d
+./load.sh | tee -a log.txt 
+
 # k8s
 kubectl get svc
 # remember to enable metrics
