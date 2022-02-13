@@ -70,7 +70,8 @@ do
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
 echo t_end=$(date +%FT%T:0000) >> dates.txt
-
+sleep 10
+./upload
 
 
 

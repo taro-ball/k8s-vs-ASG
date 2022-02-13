@@ -88,8 +88,12 @@ Resources:
           cd /tmp
           git clone https://test-script:${repotoken}@${repourl}
           mydate=$(date +"%Y-%m-%d-%H-%M")
-          cc="sshpass -p ${SSHpass} scp -r /tmp/k8s-vs-ASG/data/cli ${SSHuser}@${SSHhost}:/home/${SSHuser}/$mydate"
-          echo $cc > /tmp/k8s-vs-ASG/data/cli/upload.sh
+
+          cd /tmp/k8s-vs-ASG/data/cli
+          cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$mydate"
+          echo $cc > upload.sh
+          chmod +x upload.sh
+          chmod -R a+rw /tmp/
           # fortio server
       Tags:
         - Key: Name
