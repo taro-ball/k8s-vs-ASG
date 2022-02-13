@@ -90,7 +90,7 @@ Resources:
           mydate=$(date +"%Y-%m-%d-%H-%M")
 
           cd /tmp/k8s-vs-ASG/data/cli
-          cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$mydate"
+          cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD/. ${SSHuser}@${SSHhost}:/home/${SSHuser}/$mydate"
           echo $cc > upload.sh
           chmod +x *.sh
           chmod -R a+rw /tmp/

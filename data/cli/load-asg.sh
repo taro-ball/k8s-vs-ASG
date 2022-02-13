@@ -24,7 +24,7 @@ scaling_sec=750
 max_capacity=4
 fi
 
-echo t_start=$(date +%FT%T:0000) >> dates.txt
+echo export t_start=$(date +%FT%T) >> dates.txt
 set -x
 
 region_param='--region us-east-1'
@@ -51,7 +51,7 @@ for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $
 # performance
 for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url; done
 
-echo t_scaling=$(date +%FT%T:0000) >> dates.txt
+echo export t_scaling=$(date +%FT%T) >> dates.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
@@ -69,11 +69,11 @@ do
 
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
-echo t_end=$(date +%FT%T:0000) >> dates.txt
+# note
+# date -d "+ 10 minutes" +%FT%T
+echo export t_end=$(date +%FT%T) >> dates.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600
-./upload.sh
-
-
+./jh-get-data.sh
 
