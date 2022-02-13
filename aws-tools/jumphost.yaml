@@ -94,7 +94,9 @@ Resources:
           echo $cc > upload.sh
           chmod +x *.sh
           chmod -R a+rw /tmp/
-          ./upload.sh
+          # ./upload.sh
+          # wait for the stack to come up
+          sleep 600
           nohup ./load-asg.sh &> load.log &
           # fortio server
       Tags:

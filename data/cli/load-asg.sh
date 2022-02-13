@@ -43,7 +43,7 @@ aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-nam
 aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 1.0, "DisableScaleIn": false}'
 
 # quick test
-cd;pwd; curl http://$lb:$warmup_url; echo
+pwd; curl http://$lb:$warmup_url; echo
 
 # LB warmup
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url; sleep 60 ; done
@@ -56,7 +56,7 @@ echo t_scaling=$(date +%FT%T:0000) >> dates.txt
 for((i=1;i<=3;i+=1));
 do
 
-    # 99cpu policy to prevent scaleout on historical data
+    # 99cpu policy to prevent immideate scaleout on historical data
     aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
 
 	# scale to min
@@ -64,14 +64,16 @@ do
     aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-name $myasg --desired-capacity 1;
     
     sleep 180;
-        # pack to initial policy
+        # back to initial policy
         aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
 
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
 echo t_end=$(date +%FT%T:0000) >> dates.txt
-sleep 10
-./upload
+
+# wait for CloudWatch logs to catch up
+sleep 600
+./upload.sh
 
 
 
