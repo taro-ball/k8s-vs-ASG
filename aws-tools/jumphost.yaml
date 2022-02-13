@@ -92,8 +92,10 @@ Resources:
           cd /tmp/k8s-vs-ASG/data/cli
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$mydate"
           echo $cc > upload.sh
-          chmod +x upload.sh
+          chmod +x *.sh
           chmod -R a+rw /tmp/
+          ./upload.sh
+          nohup ./load-asg.sh &> load.log &
           # fortio server
       Tags:
         - Key: Name
