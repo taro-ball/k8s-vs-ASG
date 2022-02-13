@@ -14,8 +14,13 @@ sbntID=`aws ec2 describe-subnets --filters "Name=vpc-id,Values=${vpcID}"  --outp
 
 set -x
 
+# checking out secrets in git is a bad practice, so excluding the secrets file:
+source .exclSecrets.sh
+
 aws cloudformation create-stack\
  --disable-rollback --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND\
  --stack-name jumphost-$1 --template-body file://jumphost.yaml\
- --parameters ParameterKey=myVPC,ParameterValue=${vpcID} ParameterKey=mySubnet1,ParameterValue=${sbntID}
-
+ --parameters ParameterKey=myVPC,ParameterValue=${vpcID} ParameterKey=mySubnet1,ParameterValue=${sbntID} \
+ ParameterKey=SSHuser,ParameterValue=${SSHuser} ParameterKey=SSHpass,ParameterValue=${SSHpass} \
+ ParameterKey=repourl,ParameterValue=${repourl} ParameterKey=repotoken,ParameterValue=${repotoken} \
+ ParameterKey=SSHhost,ParameterValue=${SSHhost}
