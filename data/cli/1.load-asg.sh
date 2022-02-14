@@ -75,5 +75,5 @@ echo export t_end=$(date +%FT%T) >> dates.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600
-./jh-get-data.sh
-
+./2.jh-get-data.sh
+./3.upload.sh
