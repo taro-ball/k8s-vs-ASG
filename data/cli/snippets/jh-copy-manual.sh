@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# copy from gcloud permanent
+find $PWD/* -ctime -0.2 -type d
+
 ip=`aws ec2 describe-instances --filters Name=tag-value,Values=jumphost-1 --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text`
 echo copying to $ip
 # remember to `cd data/cli`
