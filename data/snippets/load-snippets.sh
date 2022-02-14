@@ -48,3 +48,4 @@ jq '{"URL": .Labels,StartTime,NumThreads,ActualQPS,\
 
 
 # jq '{"Labels": .Labels,URL,StartTime,NumThreads,ActualQPS,"DurationSeconds": (.ActualDuration/1000000000),"TotalRequests": .DurationHistogram["Count"],"Percentiles":.DurationHistogram["Percentiles"][2]}' 2*
+fmetric () { jq '{"Labels": .Labels,URL,StartTime,NumThreads,ActualQPS,"DurationSeconds": (.ActualDuration/1000000000),"TotalRequests": .DurationHistogram["Count"],"Percentiles":.DurationHistogram["Percentiles"][2]}' 2*; }
