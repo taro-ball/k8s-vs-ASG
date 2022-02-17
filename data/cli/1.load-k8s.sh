@@ -1,11 +1,12 @@
 #!/usr/bin/bash
 set -x
 
-app="apache3"
+test=$1
+cluster_name=C888
 echo export t_start=$(date +%FT%T) >> dates.txt
 export AWS_DEFAULT_REGION=us-east-1
 
-if [ "$app" == "apache3" ]; then
+if [ "$test" == "k8s_apache3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
 cpu_perc=70
@@ -16,21 +17,22 @@ scaling_sec=800
 max_capacity=3
 fi
 
-if [ "$app" == "node4k8s" ]; then
+if [ "$test" == "k8s_node4" ]; then
 warmup_url='3000?n=5555'
 testing_url='3000?n=9999'
 hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
-scaling_sec=750
+scaling_sec=600
 max_pods=8
+max_nodes=4
 fi
 
 # authenticate
 source .k8sSecrets
 # log on to k8s
-aws eks update-kubeconfig --region us-east-1 --name C888 
+aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
 
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
@@ -38,9 +40,9 @@ lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ing
 # set max, scale to max
 echo scaling to $max_capacity;
 kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment;
-kubectl scale --replicas=8 deployment/taro-deployment
+kubectl scale --replicas=$max_pods deployment/taro-deployment
 
-# remember to enable metrics
+# enable workers ASG metrics
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
 aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
 
@@ -58,16 +60,17 @@ echo export t_scaling=$(date +%FT%T) >> dates.txt
 for((i=1;i<=3;i+=1));
 do
 
-    # delete hpa to prevent immideate scaleout on historical data
+    # delete hpa to prevent immediate scaleout on historical data
     kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
 
 	# scale to min
     echo scaling to 1;
     kubectl scale --replicas=1 deployment/taro-deployment
-    
+    eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
+
     sleep 180;
         # create the hpa
-        kubectl autoscale deployment taro-deployment --cpu-percent=50 --min=1 --max=8
+        kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
