@@ -158,7 +158,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
         - arn:aws:iam::aws:policy/AmazonEC2FullAccess
         - arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess
-        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        # - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
         
 
       # Policies:
