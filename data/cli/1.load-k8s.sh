@@ -16,15 +16,15 @@ scaling_sec=800
 max_capacity=3
 fi
 
-if [ "$app" == "node4" ]; then
+if [ "$app" == "node4k8s" ]; then
 warmup_url='3000?n=5555'
 testing_url='3000?n=9999'
-cpu_perc=35
+hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
 scaling_sec=750
-max_capacity=4
+max_pods=8
 fi
 
 # authenticate

@@ -38,7 +38,12 @@ Parameters:
   repotoken:
     Type: String
     NoEcho : true
-
+  authkey:
+    Type: String
+    NoEcho : true
+  authsecret:
+    Type: String
+    NoEcho : true
 Resources:
 
   WebServer:
@@ -70,8 +75,8 @@ Resources:
           mv /tmp/kubectl /usr/local/bin/
 
           # install eksctl
-          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
+          # curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          # chmod +x /tmp/eksctl && sudo mv /tmp/eksctl /usr/local/bin/
 
           # install hey tool
           # curl -o /usr/bin/hey https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
@@ -91,6 +96,9 @@ Resources:
           cd /tmp/k8s-vs-ASG/data/cli
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
           echo $cc > 3.upload.sh
+
+          echo -e export AWS_ACCESS_KEY_ID=${authkey}\; export AWS_SECRET_ACCESS_KEY=${authsecret} > .k8sSecrets
+
           chmod +x *.sh
           chmod -R a+rw /tmp/
           # wait for the stack to come up

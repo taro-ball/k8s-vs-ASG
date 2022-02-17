@@ -1,6 +1,9 @@
 #!/bin/bash
 set -x
+
+# if not usinf default profile
 source .exclAuthenticate.sh
+
 # write new key only if successful
 pem=$(aws ec2 create-key-pair --key-name dev-key) && echo "$pem" | jq --raw-output '.KeyMaterial' > .exclDEV-Key.pem
 
