@@ -19,7 +19,7 @@ metadata:
   labels:
     env: taro
 spec:
-  replicas: 1
+  replicas: 8
   selector:
     matchLabels:
       env: taro
@@ -37,4 +37,4 @@ spec:
           limits:
             cpu: 1.0
           requests:
-            cpu: 0.71
+            cpu: 0.6
