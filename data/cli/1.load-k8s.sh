@@ -33,7 +33,7 @@ fi
 aws sts get-caller-identity
 source .k8sSecrets
 aws sts get-caller-identity
-aws configure import –csv file://credentials.csv
+aws configure import -csv file://credentials.csv
 aws sts get-caller-identity
 
 # wait for the k8s stack to come up
