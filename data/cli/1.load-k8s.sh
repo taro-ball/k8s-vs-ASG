@@ -49,8 +49,9 @@ sleep 60
 
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
+kubectl get svc
 eksctl utils write-kubeconfig --cluster=$cluster_name
-
+kubectl get svc
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
 
