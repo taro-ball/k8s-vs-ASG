@@ -64,3 +64,9 @@ vpc:
   manageSharedNodeSecurityGroupRules: true
   nat:
     gateway: Single
+
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["scheduler"]
+# eksctl utils update-cluster-logging --enable-types scheduler

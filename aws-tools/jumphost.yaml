@@ -100,16 +100,18 @@ Resources:
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
           echo $cc > 3.upload.sh
 
-          echo -e export AWS_ACCESS_KEY_ID=${authkey}\; export AWS_SECRET_ACCESS_KEY=${authsecret} > .k8sSecrets
+          # echo -e export AWS_ACCESS_KEY_ID=${authkey}\; export AWS_SECRET_ACCESS_KEY=${authsecret} > .k8sSecrets
+          echo -e 'Access key ID,Secret access key\n'${authkey},${authsecret} > credentials.csv
 
           chmod +x *.sh
           chmod -R a+rw /tmp/
-
-          if [ "${autotest:0:3}" == "asg" ]; then
+          
+          mytest=${autotest}
+          if [ "${!mytest:0:3}" == "asg" ]; then
           nohup ./1.load-asg.sh ${autotest} &> load-asg.log &
           fi
 
-          if [ "${autotest:0:3}" == "k8s" ]; then
+          if [ "${!mytest:0:3}" == "k8s" ]; then
           nohup ./1.load-k8s.sh ${autotest} &> load-k8s.log &
           fi
 
