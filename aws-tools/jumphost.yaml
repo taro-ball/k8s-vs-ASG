@@ -104,8 +104,6 @@ Resources:
 
           chmod +x *.sh
           chmod -R a+rw /tmp/
-          # wait for the stack to come up
-          sleep 600
 
           if [ "${autotest:0:3}" == "asg" ]; then
           nohup ./1.load-asg.sh ${autotest} &> load-asg.log &

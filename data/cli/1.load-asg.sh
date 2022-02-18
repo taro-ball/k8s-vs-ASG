@@ -24,6 +24,9 @@ scaling_sec=750
 max_capacity=4
 fi
 
+# wait for the asg stack to come up
+sleep 600
+
 echo export t_start=$(date +%FT%T) >> dates.txt
 set -x
 

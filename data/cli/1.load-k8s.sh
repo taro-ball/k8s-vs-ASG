@@ -31,6 +31,18 @@ fi
 
 # authenticate
 source .k8sSecrets
+
+# wait for the k8s stack to come up
+while [ -z "$myasg" ]
+do 
+myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
+echo $(date) waiting for workers ...
+sleep 60;
+done
+
+# wait for a bit more
+sleep 60
+
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
 
@@ -39,8 +51,12 @@ lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ing
 
 # set max, scale to max
 echo scaling to $max_capacity;
+# we don't want hpa to scale down the deployment, so delete it for now
 kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment;
+# scale k8s deployment to max
 kubectl scale --replicas=$max_pods deployment/taro-deployment
+# scale k8s nodes to max
+eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=$max_nodes --nodes-max=$max_nodes
 
 # enable workers ASG metrics
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
