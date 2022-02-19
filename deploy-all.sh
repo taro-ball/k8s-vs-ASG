@@ -12,7 +12,7 @@ cd aws-tools
 cd ..
 
 cd aws-asg
-./DeployAutodetect.sh 1
+# ./DeployAutodetect.sh 1
 cd ..
 
 eksctl create cluster -f eksctl/Cgenerated.yml

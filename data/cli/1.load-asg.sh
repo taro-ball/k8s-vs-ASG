@@ -1,4 +1,7 @@
 #!/usr/bin/bash
+set -x
+exec >> load-asg.log
+exec 2>&1
 
 app="apache3"
 
@@ -28,7 +31,6 @@ fi
 sleep 600
 
 echo export t_start=$(date +%FT%T) >> dates.txt
-set -x
 
 region_param='--region us-east-1'
 

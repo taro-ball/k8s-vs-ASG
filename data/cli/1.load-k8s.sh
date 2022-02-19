@@ -1,7 +1,9 @@
 #!/usr/bin/bash
 set -x
+exec >> load-k8s.log
+exec 2>&1
 
-test=$1
+test=$(cat mytest)
 cluster_name=C888
 echo export t_start=$(date +%FT%T) >> dates.txt
 export AWS_DEFAULT_REGION=us-east-1
