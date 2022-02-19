@@ -118,8 +118,11 @@ Resources:
          
           if [ "${!mytest:0:3}" == "k8s" ]; then
           # nohup ./1.load-k8s.sh ${autotest} &
-          runuser -l  root -c 'echo "/tmp/k8s-vs-ASG/data/cli/1.load-k8s.sh" | at now + 1 min'
+          runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load-k8s.sh&" | at now'
           fi
+
+          # make sure at started
+          sleep 10
 
           # fortio server
       Tags:
