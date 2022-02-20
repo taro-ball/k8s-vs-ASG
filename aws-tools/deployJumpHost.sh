@@ -24,4 +24,4 @@ aws cloudformation create-stack\
  ParameterKey=SSHuser,ParameterValue=${SSHuser} ParameterKey=SSHpass,ParameterValue=${SSHpass} \
  ParameterKey=repourl,ParameterValue=${repourl} ParameterKey=repotoken,ParameterValue=${repotoken} \
  ParameterKey=SSHhost,ParameterValue=${SSHhost} ParameterKey=autotest,ParameterValue=${autotest} \
- ParameterKey=authkey,ParameterValue=${authkey} ParameterKey=authsecret,ParameterValue=${authsecret@Q}
+ ParameterKey=authkey,ParameterValue=${authkey} ParameterKey=authsecret,ParameterValue=${authsecret}

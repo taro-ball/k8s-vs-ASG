@@ -25,6 +25,7 @@ warmup_min_threads=65
 warmup_max_threads=75
 warmup_cycle_sec=120
 scaling_sec=800
+performance_sec=300
 max_capacity=3
 fi
 
@@ -36,6 +37,7 @@ warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
 scaling_sec=600
+performance_sec=300
 max_pods=6
 max_nodes=3
 fi
@@ -90,7 +92,7 @@ for((i=1;i<=3;i+=1))
 do 
     sleep 60
     check_stats()
-    fortio load -a -c $warmup_max_threads -t 30s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url
 done
 
 echo export t_scaling=$(date +%FT%T) >> dates.txt
