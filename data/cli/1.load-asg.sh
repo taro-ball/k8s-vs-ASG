@@ -3,9 +3,15 @@ set -x
 exec >> load-asg.log
 exec 2>&1
 
-app="apache3"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR
+dirname "$0"
 
-if [ "$app" == "apache3" ]; then
+test=$(cat mytest)
+echo export t_start=$(date +%FT%T) >> dates.txt
+export AWS_DEFAULT_REGION=us-east-1
+
+if [ "$test" == "asg_apache3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
 cpu_perc=70
@@ -16,7 +22,7 @@ scaling_sec=800
 max_capacity=3
 fi
 
-if [ "$app" == "node4" ]; then
+if [ "$test" == "asg_node3" ]; then
 warmup_url='3000?n=5555'
 testing_url='3000?n=9999'
 cpu_perc=35
@@ -24,7 +30,7 @@ warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
 scaling_sec=750
-max_capacity=4
+max_capacity=3
 fi
 
 # wait for the asg stack to come up

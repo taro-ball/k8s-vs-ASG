@@ -1,15 +1,23 @@
 #!/usr/bin/bash
 set -x
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-cd $SCRIPT_DIR
-dirname "$0"
 exec >> load-k8s.log
 exec 2>&1
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR
+dirname "$0"
+
 test=$(cat mytest)
-cluster_name=C888
 echo export t_start=$(date +%FT%T) >> dates.txt
 export AWS_DEFAULT_REGION=us-east-1
+cluster_name=C888
+
+check_stats () {
+  date
+  kubectl get hpa
+  kubectl get deployment
+  kubectl top nodes
+}
 
 if [ "$test" == "k8s_apache3" ]; then
 warmup_url='80/test.html'
@@ -22,7 +30,7 @@ scaling_sec=800
 max_capacity=3
 fi
 
-if [ "$test" == "k8s_node4" ]; then
+if [ "$test" == "k8s_node3" ]; then
 warmup_url='3000?n=5555'
 testing_url='3000?n=9999'
 hpa_perc=70
@@ -30,15 +38,12 @@ warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
 scaling_sec=600
-max_pods=8
-max_nodes=4
+max_pods=6
+max_nodes=3
 fi
 
 # authenticate
-aws sts get-caller-identity
 source .k8sSecrets
-aws sts get-caller-identity
-aws configure import -csv file://credentials.csv
 aws sts get-caller-identity
 
 # wait for the k8s stack to come up
@@ -54,8 +59,6 @@ sleep 60
 
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
-kubectl get svc
-eksctl utils write-kubeconfig --cluster=$cluster_name
 kubectl get svc
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
@@ -74,13 +77,23 @@ myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*
 aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
 
 # quick test
-pwd; curl http://$lb:$warmup_url; echo
+curl http://$lb:$warmup_url; echo
 
 # LB warmup
-for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url; sleep 60 ; done
+for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1))
+do
+    check_stats()
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url
+    sleep 60
+done
 
 # performance
-for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 30s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url; done
+for((i=1;i<=3;i+=1))
+do 
+    sleep 60
+    check_stats()
+    fortio load -a -c $warmup_max_threads -t 30s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url
+done
 
 echo export t_scaling=$(date +%FT%T) >> dates.txt
 # scaling
@@ -99,6 +112,7 @@ do
         # create the hpa
         kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 
+    check_stats()
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
 # note
