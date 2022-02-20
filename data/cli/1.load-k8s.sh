@@ -1,11 +1,9 @@
 #!/usr/bin/bash
 set -x
+mydir=`dirname "$0"`
+cd $mydir
 exec >> load-k8s.log
 exec 2>&1
-
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-cd $SCRIPT_DIR
-dirname "$0"
 
 test=$(cat mytest)
 echo export t_start=$(date +%FT%T) >> dates.txt
