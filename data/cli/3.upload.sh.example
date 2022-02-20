@@ -1,0 +1,1 @@
+sshpass -p mypa$$word scp -o StrictHostKeyChecking=no -r /mysource/data/cli myuser@1.2.3.4:/mydestination/2012.02.20_20-45
