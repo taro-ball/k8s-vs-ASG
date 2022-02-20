@@ -43,7 +43,7 @@ max_nodes=3
 fi
 
 # authenticate
-source .k8sSecrets
+source .k8sSecrets.noupl
 aws sts get-caller-identity
 
 # wait for the k8s stack to come up
@@ -82,7 +82,7 @@ curl http://$lb:$warmup_url; echo
 # LB warmup
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
-    check_stats()
+    check_stats
     fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url
     sleep 60
 done
@@ -91,7 +91,7 @@ done
 for((i=1;i<=3;i+=1));
 do 
     sleep 60
-    check_stats()
+    check_stats
     fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url
 done
 
@@ -112,7 +112,7 @@ do
         # create the hpa
         kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 
-    check_stats()
+    check_stats
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
 # note
@@ -122,4 +122,4 @@ echo export t_end=$(date +%FT%T) >> dates.txt
 # wait for CloudWatch logs to catch up
 sleep 600
 ./2.jh-get-data.sh
-./3.upload.sh
+./3.upload.noupl.sh

@@ -99,8 +99,8 @@ Resources:
           date_folder=$(date +"%Y.%m.%d_%H-%M")
 
           cd ${!script_path}
-          cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
-          echo $cc > 3.upload.sh.noupl
+          cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD/!(*.noupl*) ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
+          echo $cc > 3.upload.noupl.sh
 
           # echo -e export AWS_ACCESS_KEY_ID=${authkey}\; export AWS_SECRET_ACCESS_KEY=${authsecret} > .k8sSecrets
           # echo -e 'Access key ID,Secret access key\n'${authkey},${authsecret} > credentials.csv
