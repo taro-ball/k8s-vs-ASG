@@ -80,7 +80,7 @@ aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --gra
 curl http://$lb:$warmup_url; echo
 
 # LB warmup
-for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1))
+for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats()
     fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url
@@ -88,7 +88,7 @@ do
 done
 
 # performance
-for((i=1;i<=3;i+=1))
+for((i=1;i<=3;i+=1));
 do 
     sleep 60
     check_stats()
