@@ -7,8 +7,8 @@ exec 2>&1
 
 test=$(cat mytest)
 echo export t_start=$(date +%FT%T) >> dates.txt
-export AWS_DEFAULT_REGION=us-east-1
-cluster_name=C888
+export AWS_DEFAULT_REGION="us-east-1"
+cluster_name="C888"
 
 check_stats () {
   date
