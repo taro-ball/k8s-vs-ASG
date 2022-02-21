@@ -10,10 +10,10 @@ test=$(cat mytest)
 echo export t_start=$(date +%FT%T) >> dates.txt
 export AWS_DEFAULT_REGION="us-east-1"
 cluster_name="C888"
+line='=============================='
 
 check_stats () {
-  printf -- '=%.0s' {1..50}
-  date +%FT%T
+  echo [$(date +%FT%T)]${line}[STATS]
   kubectl get hpa
   kubectl get deployment
   kubectl top nodes
@@ -33,7 +33,7 @@ fi
 
 if [ "$test" == "k8s_node3" ]; then
 warmup_url='3000?n=5555'
-testing_url='3000?n=20000'
+testing_url='3000?n=10000'
 hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
@@ -52,7 +52,7 @@ aws sts get-caller-identity
 while [ -z "$myasg" ]
 do 
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
-echo $(date) waiting for workers ...
+echo [$(date +%FT%T)] waiting for nodes ...
 sleep 60;
 done
 
@@ -66,7 +66,7 @@ kubectl get svc
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
 
 # set max, scale to max
-echo scaling to $max_capacity;
+echo scaling cluster to $max_nodes and deployment to $max_pods pods;
 # we don't want hpa to scale down the deployment, so delete it for now
 kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
 # scale k8s deployment to max
@@ -85,7 +85,8 @@ curl http://$lb:$warmup_url; echo
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats
-    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup" http://$lb:$warmup_url
+    echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup-${i}" http://$lb:$warmup_url
     check_stats
     sleep 60
 done
@@ -95,6 +96,7 @@ for((i=1;i<=3;i+=1));
 do 
     sleep 60
     check_stats
+    echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
     fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
     check_stats
 done
@@ -103,7 +105,7 @@ echo export t_scaling=$(date +%FT%T) >> dates.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
-
+    echo [$(date +%FT%T)]${line}[SCALING DOWN]${line}
     # delete hpa to prevent immediate scaleout on historical data
     kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
 
@@ -111,7 +113,8 @@ do
     echo scaling to 1;
     kubectl scale --replicas=1 deployment/taro-deployment
     eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
-
+    
+    echo [$(date +%FT%T)]${line}[SCALING HPA (SLEEP)]${line}
     sleep 160;
     # create the hpa
     kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
@@ -119,6 +122,7 @@ do
     sleep 20
 
     check_stats
+    echo [$(date +%FT%T)]${line}[SCALING RUN ${i}]${line}
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
     check_stats
 done
