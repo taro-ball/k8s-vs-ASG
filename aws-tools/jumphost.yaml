@@ -96,7 +96,7 @@ Resources:
 
           cd /tmp
           git clone https://test-script:${repotoken}@${repourl}
-          date_folder=$(date +"%Y.%m.%d_%H-%M")
+          date_folder=$(date +"%Y.%m.%d_%H-%M")${autotest}
 
           cd ${!script_path}
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
@@ -121,7 +121,7 @@ Resources:
           runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load-k8s.sh&" | at now'
           fi
 
-          # make sure at started
+          # make sure "at" started
           sleep 10
 
           # fortio server
