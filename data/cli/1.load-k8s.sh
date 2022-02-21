@@ -4,6 +4,7 @@ mydir=`dirname "$0"`
 cd $mydir
 exec >> load-k8s.log
 exec 2>&1
+echo starting in $PWD mydir=$mydir
 
 test=$(cat mytest)
 echo export t_start=$(date +%FT%T) >> dates.txt
@@ -11,7 +12,8 @@ export AWS_DEFAULT_REGION="us-east-1"
 cluster_name="C888"
 
 check_stats () {
-  date
+  printf -- '=%.0s' {1..60}
+  date +%FT%T
   kubectl get hpa
   kubectl get deployment
   kubectl top nodes
@@ -54,8 +56,8 @@ echo $(date) waiting for workers ...
 sleep 60;
 done
 
-# wait for a bit more
-sleep 60
+# wait for a bit more - it takes some time for service to be available
+sleep 120
 
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
@@ -83,7 +85,7 @@ curl http://$lb:$warmup_url; echo
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats
-    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup" http://$lb:$warmup_url
     sleep 60
 done
 
@@ -92,7 +94,7 @@ for((i=1;i<=3;i+=1));
 do 
     sleep 60
     check_stats
-    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
 done
 
 echo export t_scaling=$(date +%FT%T) >> dates.txt
@@ -113,7 +115,7 @@ do
         kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 
     check_stats
-    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
 done
 # note
 # date -d "+ 10 minutes" +%FT%T
