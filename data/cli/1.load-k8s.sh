@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -x
+#set -x
 mydir=`dirname "$0"`
 cd $mydir
 exec >> load-k8s.log
@@ -12,7 +12,7 @@ export AWS_DEFAULT_REGION="us-east-1"
 cluster_name="C888"
 
 check_stats () {
-  printf -- '=%.0s' {1..60}
+  printf -- '=%.0s' {1..50}
   date +%FT%T
   kubectl get hpa
   kubectl get deployment
@@ -38,7 +38,7 @@ hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=60
-scaling_sec=600
+scaling_sec=800
 performance_sec=300
 max_pods=6
 max_nodes=3
@@ -56,8 +56,8 @@ echo $(date) waiting for workers ...
 sleep 60;
 done
 
-# wait for a bit more - it takes some time for service to be available
-sleep 120
+# wait for a bit more - it takes some time for service to become available
+sleep 240
 
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
@@ -68,7 +68,7 @@ lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ing
 # set max, scale to max
 echo scaling to $max_capacity;
 # we don't want hpa to scale down the deployment, so delete it for now
-kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment;
+kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
 # scale k8s deployment to max
 kubectl scale --replicas=$max_pods deployment/taro-deployment
 # scale k8s nodes to max
@@ -86,6 +86,7 @@ for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats
     fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup" http://$lb:$warmup_url
+    check_stats
     sleep 60
 done
 
@@ -95,6 +96,7 @@ do
     sleep 60
     check_stats
     fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
+    check_stats
 done
 
 echo export t_scaling=$(date +%FT%T) >> dates.txt
@@ -110,12 +112,15 @@ do
     kubectl scale --replicas=1 deployment/taro-deployment
     eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
 
-    sleep 180;
-        # create the hpa
-        kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
+    sleep 160;
+    # create the hpa
+    kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
+    # wait for hpa to get metrics
+    sleep 20
 
     check_stats
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
+    check_stats
 done
 # note
 # date -d "+ 10 minutes" +%FT%T
