@@ -96,7 +96,7 @@ Resources:
 
           cd /tmp
           git clone https://test-script:${repotoken}@${repourl}
-          date_folder=$(date +"%Y.%m.%d_%H-%M")${autotest}
+          date_folder=$(date +"%Y.%m.%d_%H-%M")_${autotest}
 
           cd ${!script_path}
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"

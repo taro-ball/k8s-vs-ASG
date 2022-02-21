@@ -7,7 +7,7 @@ exec 2>&1
 echo starting in $PWD mydir=$mydir
 
 test=$(cat mytest)
-echo export t_start=$(date +%FT%T) >> dates.txt
+echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 export AWS_DEFAULT_REGION="us-east-1"
 cluster_name="C888"
 line='=============================='
@@ -18,7 +18,7 @@ check_stats () {
   kubectl get deployment
   kubectl top nodes
 }
-
+set -x # print variables
 if [ "$test" == "k8s_apache3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
@@ -43,7 +43,7 @@ performance_sec=300
 max_pods=6
 max_nodes=3
 fi
-
+set +x
 # authenticate
 source .k8sSecrets.noupl
 aws sts get-caller-identity
@@ -101,7 +101,7 @@ do
     check_stats
 done
 
-echo export t_scaling=$(date +%FT%T) >> dates.txt
+echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
@@ -114,7 +114,7 @@ do
     kubectl scale --replicas=1 deployment/taro-deployment
     eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
     
-    echo [$(date +%FT%T)]${line}[SCALING HPA (SLEEP)]${line}
+    echo [$(date +%FT%T)]${line}[SCALING HPA - SLEEP]${line}
     sleep 160;
     # create the hpa
     kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
@@ -128,7 +128,9 @@ do
 done
 # note
 # date -d "+ 10 minutes" +%FT%T
-echo export t_end=$(date +%FT%T) >> dates.txt
+echo export t_end=$(date +%FT%T) >> metrics_vars.txt
+echo export asg_name=$myasg >> metrics_vars.txt
+echo export lb_name=$(echo $lb | cut -d "-" -f 1) >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600

@@ -9,7 +9,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "asg-1-lb"
+                            "Value": "${lb_name}"
                         }
                     ]
                 },
@@ -28,7 +28,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "asg-1-lb"
+                            "Value": "${lb_name}"
                         }
                     ]
                 },
@@ -47,7 +47,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "asg-1-lb"
+                            "Value": "${lb_name}"
                         }
                     ]
                 },
@@ -66,7 +66,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "asg-1-lb"
+                            "Value": "${lb_name}"
                         }
                     ]
                 },
@@ -85,7 +85,7 @@
                     "Dimensions": [
                         {
                             "Name": "LoadBalancerName",
-                            "Value": "asg-1-lb"
+                            "Value": "${lb_name}"
                         }
                     ]
                 },

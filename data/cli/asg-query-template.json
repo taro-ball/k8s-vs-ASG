@@ -9,7 +9,7 @@
                     "Dimensions": [
                         {
                             "Name": "AutoScalingGroupName",
-                            "Value": "asg-1-myASG"
+                            "Value": "${asg_name}"
                         }
                     ]
                 },
@@ -28,7 +28,7 @@
                     "Dimensions": [
                         {
                             "Name": "AutoScalingGroupName",
-                            "Value": "asg-1-myASG"
+                            "Value": "${asg_name}"
                         }
                     ]
                 },
@@ -47,7 +47,7 @@
                     "Dimensions": [
                         {
                             "Name": "AutoScalingGroupName",
-                            "Value": "asg-1-myASG"
+                            "Value": "${asg_name}"
                         }
                     ]
                 },
