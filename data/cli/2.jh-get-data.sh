@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 source metrics_vars.txt
+echo -e "$t_start..$t_end\n$asg_name\n$lb_name"
 
 envsubst < alb-query-template.json > alb-query.json
 envsubst < asg-query-template.json > asg-query.json
