@@ -4,13 +4,13 @@ mydir=`dirname "$0"`
 cd $mydir
 exec >> load-k8s.log
 exec 2>&1
-echo starting in $PWD mydir=$mydir
+echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
 
 test=$(cat mytest)
-echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 export AWS_DEFAULT_REGION="us-east-1"
-cluster_name="C888"
 line='=============================='
+cluster_name="C888"
+
 
 check_stats () {
   echo [$(date +%FT%T)]${line}[STATS]
@@ -33,7 +33,7 @@ fi
 
 if [ "$test" == "k8s_node3" ]; then
 warmup_url='3000?n=5555'
-testing_url='3000?n=10000'
+testing_url='3000?n=20000'
 hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
@@ -58,6 +58,7 @@ done
 
 # wait for a bit more - it takes some time for service to become available
 sleep 240
+echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 
 # log on to k8s
 aws eks update-kubeconfig --region us-east-1 --name $cluster_name 
