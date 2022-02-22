@@ -64,6 +64,7 @@ aws eks update-kubeconfig --region us-east-1 --name $cluster_name
 kubectl get svc
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
+aws elb describe-load-balancers
 
 # set max, scale to max
 echo scaling cluster to $max_nodes and deployment to $max_pods pods;
@@ -134,5 +135,7 @@ echo export lb_name=$(echo $lb | cut -d "-" -f 1) >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600
+echo [$(date +%FT%T)]${line}[GET DATA]${line}
 ./2.jh-get-data.sh
+echo [$(date +%FT%T)]${line}[UPLOAD $(cat 3.upload.noupl.sh | rev | cut -d "." -f 1 | rev)]${line} 
 ./3.upload.noupl.sh
