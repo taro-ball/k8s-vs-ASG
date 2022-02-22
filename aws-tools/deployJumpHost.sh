@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+# first parameter - stack name, second - autotest name
 aws sts get-caller-identity
 vpcID=`aws ec2 describe-vpcs \
     --filters Name=isDefault,Values=true \
@@ -23,5 +24,5 @@ aws cloudformation create-stack\
  --parameters ParameterKey=myVPC,ParameterValue=${vpcID} ParameterKey=mySubnet1,ParameterValue=${sbntID} \
  ParameterKey=SSHuser,ParameterValue=${SSHuser} ParameterKey=SSHpass,ParameterValue=${SSHpass} \
  ParameterKey=repourl,ParameterValue=${repourl} ParameterKey=repotoken,ParameterValue=${repotoken} \
- ParameterKey=SSHhost,ParameterValue=${SSHhost} ParameterKey=autotest,ParameterValue=${autotest} \
+ ParameterKey=SSHhost,ParameterValue=${SSHhost} ParameterKey=autotest,ParameterValue=$2 \
  ParameterKey=authkey,ParameterValue=${authkey} ParameterKey=authsecret,ParameterValue=${authsecret}
