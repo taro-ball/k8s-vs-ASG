@@ -1,15 +1,20 @@
 #!/usr/bin/bash
-set -x
-exec >> load-asg.log
+#set -x
+mydir=`dirname "$0"`
+cd $mydir
+exec >> load-k8s.log
 exec 2>&1
-
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-cd $SCRIPT_DIR
-dirname "$0"
+echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
 
 test=$(cat mytest)
-echo export t_start=$(date +%FT%T) >> dates.txt
-export AWS_DEFAULT_REGION=us-east-1
+echo export t_start=$(date +%FT%T) >> metrics_vars.txt
+export AWS_DEFAULT_REGION="us-east-1"
+line='=============================='
+
+check_stats () {
+  echo [$(date +%FT%T)]${line}[STATS]
+  aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*]' | jq --raw-output '.[]| .Instances[] | (.InstanceId, .LifecycleState, .HealthStatus, {})'
+}
 
 if [ "$test" == "asg_apache3" ]; then
 warmup_url='80/test.html'
@@ -38,20 +43,18 @@ sleep 600
 
 echo export t_start=$(date +%FT%T) >> dates.txt
 
-region_param='--region us-east-1'
-
 # get lb, asg and policy
-lb=`aws elb describe-load-balancers $region_param --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
-myasg=`aws autoscaling describe-auto-scaling-groups $region_param --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
-mypolicy_name=`aws autoscaling describe-policies $region_param --query "ScalingPolicies[*].PolicyName" --output text | sed 's/\s\+/\n/g' | grep asg`
+lb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
+myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
+mypolicy_name=`aws autoscaling describe-policies --query "ScalingPolicies[*].PolicyName" --output text | sed 's/\s\+/\n/g' | grep asg`
 policy_json='{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue":'" ${cpu_perc}.0, "'"DisableScaleIn": false}'
 
 # set max, scale to max
 echo scaling to $max_capacity;
-aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-name $myasg --desired-capacity $max_capacity --max-size $max_capacity
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --desired-capacity $max_capacity --max-size $max_capacity
 
 # set initial policy to keep instance count up
-aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 1.0, "DisableScaleIn": false}'
+aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 1.0, "DisableScaleIn": false}'
 
 # quick test
 pwd; curl http://$lb:$warmup_url; echo
@@ -68,15 +71,15 @@ for((i=1;i<=3;i+=1));
 do
 
     # 99cpu policy to prevent immideate scaleout on historical data
-    aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
+    aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
 
 	# scale to min
     echo scaling to 1;
-    aws autoscaling update-auto-scaling-group $region_param --auto-scaling-group-name $myasg --desired-capacity 1;
+    aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --desired-capacity 1;
     
     sleep 180;
         # back to initial policy
-        aws autoscaling put-scaling-policy $region_param --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
+        aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
 
     fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
 done
