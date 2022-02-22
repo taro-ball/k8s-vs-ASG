@@ -58,6 +58,25 @@
             "ReturnData": true
         },
         {
+            "Id": "estimatedProcessedBytes",
+            "MetricStat": {
+                "Metric": {
+                    "Namespace": "AWS/ELB",
+                    "MetricName": "EstimatedProcessedBytes",
+                    "Dimensions": [
+                        {
+                            "Name": "LoadBalancerName",
+                            "Value": "${lb_name}"
+                        }
+                    ]
+                },
+                "Period": 60,
+                "Stat": "Sum"
+            },
+            "Label": "myRequestLabel",
+            "ReturnData": true
+        },
+        {
             "Id": "estimatedALBConsumedLCUs",
             "MetricStat": {
                 "Metric": {
@@ -99,5 +118,4 @@
     "StartTime": "${t_start}",
     "EndTime": "${t_end}",
     "ScanBy": "TimestampAscending"
-    
 }
