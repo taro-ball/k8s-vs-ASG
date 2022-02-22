@@ -26,11 +26,12 @@ managedNodeGroups:
   iam:
     withAddonPolicies:
       autoScaler: true
+      cloudWatch: true
       # albIngress: false
       # appMesh: false
       # appMeshPreview: false
       # certManager: false
-      # cloudWatch: false
+
       # ebs: false
       # efs: false
       # externalDNS: false
