@@ -19,19 +19,18 @@ managedNodeGroups:
   name: standard-workers
   instanceType: t3.medium
   desiredCapacity: 1
-  maxSize: 4
+  maxSize: 3
   minSize: 1
   disableIMDSv1: false
   disablePodIMDS: false
   iam:
     withAddonPolicies:
       autoScaler: true
-      cloudWatch: true
+      # cloudWatch: true #doesn't seem to have any effect on workers asg and ec2 metrics 
       # albIngress: false
       # appMesh: false
       # appMeshPreview: false
       # certManager: false
-
       # ebs: false
       # efs: false
       # externalDNS: false

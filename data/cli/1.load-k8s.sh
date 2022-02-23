@@ -77,9 +77,8 @@ kubectl scale --replicas=$max_pods deployment/taro-deployment
 eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=$max_nodes --nodes-max=$max_nodes
 
 # enable workers ASG metrics
-## see if template works
-# myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
-# aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
+myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
+aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
 
 # quick test
 curl http://$lb:$warmup_url; echo
