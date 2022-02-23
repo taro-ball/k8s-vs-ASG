@@ -26,7 +26,7 @@ cpu_perc=70
 warmup_min_threads=65
 warmup_max_threads=75
 warmup_cycle_sec=120
-scaling_sec=800
+scaling_sec=900
 performance_sec=300
 max_capacity=3
 fi
@@ -38,7 +38,7 @@ hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-scaling_sec=800
+scaling_sec=900
 performance_sec=300
 max_pods=6
 max_nodes=3
