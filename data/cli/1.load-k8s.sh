@@ -68,13 +68,13 @@ lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ing
 aws elb describe-load-balancers
 
 # set max, scale to max
-echo [$(date +%FT%T)]${line}[scaling cluster to $max_nodes and deployment to $max_pods pods]
+# echo [$(date +%FT%T)]${line}[scaling deployment to $max_pods pods] #cluster to $max_nodes and
 # we don't want hpa to scale down the deployment, so delete it for now
-kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
+# kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
 # scale k8s deployment to max
-kubectl scale --replicas=$max_pods deployment/taro-deployment
+# kubectl scale --replicas=$max_pods deployment/taro-deployment
 # scale k8s nodes to max
-eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=$max_nodes --nodes-max=$max_nodes
+# eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=$max_nodes --nodes-max=$max_nodes
 
 # enable workers ASG metrics
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
