@@ -26,8 +26,7 @@ cpu_perc=70
 warmup_min_threads=65
 warmup_max_threads=75
 warmup_cycle_sec=120
-#scaling_sec=900
-scaling_minutes=10
+scaling_sec=900
 performance_sec=300
 max_capacity=3
 fi
@@ -39,8 +38,7 @@ hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-#scaling_sec=900
-scaling_minutes=10
+scaling_sec=1100
 performance_sec=300
 max_pods=6
 max_nodes=3
@@ -124,14 +122,10 @@ do
     kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
     # wait for hpa to get metrics
     sleep 20
-    
-    echo [$(date +%FT%T)]${line}[SCALING RUN ${i}]${line}
-    for((y=1;y<=$scaling_minutes;y+=1));
-    do
+
     check_stats
-    fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "$test-scaling-${i}-${y}" http://$lb:$testing_url
-    # check_stats
-    done
+    echo [$(date +%FT%T)]${line}[SCALING RUN ${i}]${line}
+    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
     check_stats
 done
 # note
