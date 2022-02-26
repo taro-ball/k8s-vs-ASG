@@ -69,6 +69,9 @@ kubectl get svc
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
 aws elb describe-load-balancers
 
+# start k8s metrics collection
+nohup ./k8s-metrics.sh&
+
 # set max, scale to max
 # echo [$(date +%FT%T)]${line}[scaling deployment to $max_pods pods] #cluster to $max_nodes and
 # we don't want hpa to scale down the deployment, so delete it for now
@@ -124,7 +127,7 @@ do
     kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
     # wait for hpa to get metrics
     sleep 20
-    
+
     echo [$(date +%FT%T)]${line}[SCALING RUN ${i}]${line}
     for((y=1;y<=$scaling_minutes;y+=1));
     do
