@@ -113,7 +113,7 @@ Resources:
           echo $mytest > mytest
           
           if [ "${!mytest:0:3}" == "asg" ]; then
-          nohup ./1.load-asg.sh ${autotest} &
+          runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load-asg.sh&" | at now'
           fi
          
           if [ "${!mytest:0:3}" == "k8s" ]; then

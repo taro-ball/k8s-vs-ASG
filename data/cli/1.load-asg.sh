@@ -29,19 +29,20 @@ fi
 
 if [ "$test" == "asg_node3" ]; then
 warmup_url='3000?n=5555'
-testing_url='3000?n=9999'
+testing_url='3000?n=20000'
 cpu_perc=35
 warmup_min_threads=15
 warmup_max_threads=25
-warmup_cycle_sec=60
-scaling_sec=750
+warmup_cycle_sec=90
+scaling_minutes=10
+performance_sec=300
 max_capacity=3
 fi
 
 # wait for the asg stack to come up
 sleep 600
 
-echo export t_start=$(date +%FT%T) >> dates.txt
+echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 
 # get lb, asg and policy
 lb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
@@ -57,15 +58,29 @@ aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --des
 aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 1.0, "DisableScaleIn": false}'
 
 # quick test
-pwd; curl http://$lb:$warmup_url; echo
+curl http://$lb:$warmup_url; echo
 
 # LB warmup
-for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1)); do fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$app-warmup" http://$lb:$warmup_url; sleep 60 ; done
+for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
+do
+    check_stats
+    echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup-${i}" http://$lb:$warmup_url
+    check_stats
+    sleep 60
+done
 
 # performance
-for((i=1;i<=3;i+=1)); do sleep 60; fortio load -a -c $warmup_max_threads -t 300s -qps -1 -r 0.01 -labels "$app-performance-${i}" http://$lb:$testing_url; done
+for((i=1;i<=3;i+=1));
+do 
+    sleep 60
+    check_stats
+    echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
+    check_stats
+done
 
-echo export t_scaling=$(date +%FT%T) >> dates.txt
+echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
@@ -81,13 +96,17 @@ do
         # back to initial policy
         aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
 
-    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$app-scaling-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
 done
 # note
 # date -d "+ 10 minutes" +%FT%T
-echo export t_end=$(date +%FT%T) >> dates.txt
+echo export t_end=$(date +%FT%T) >> metrics_vars.txt
+echo export asg_name=$myasg >> metrics_vars.txt
+echo export lb_name=$(echo $lb | cut -d "-" -f 1) >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600
+echo [$(date +%FT%T)]${line}[GET DATA]${line}
 ./2.jh-get-data.sh
+echo [$(date +%FT%T)]${line}[UPLOAD $(cat 3.upload.noupl.sh | rev | cut -d "." -f 1 | rev)]${line} 
 ./3.upload.noupl.sh

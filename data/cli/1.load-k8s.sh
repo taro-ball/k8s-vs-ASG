@@ -39,12 +39,12 @@ hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-#scaling_sec=900
 scaling_minutes=10
 performance_sec=300
 max_pods=6
 max_nodes=3
 fi
+
 set +x
 # authenticate
 source .k8sSecrets.noupl
