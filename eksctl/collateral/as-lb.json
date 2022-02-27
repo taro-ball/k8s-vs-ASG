@@ -1,0 +1,65 @@
+{
+    "LoadBalancerDescriptions": [
+        {
+            "Subnets": [
+                "subnet-0a3fed7b2017db625", 
+                "subnet-0c23329e9ca6d1ca5"
+            ], 
+            "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K", 
+            "VPCId": "vpc-0f464c76da0032e3b", 
+            "ListenerDescriptions": [
+                {
+                    "Listener": {
+                        "InstancePort": 3000, 
+                        "LoadBalancerPort": 3000, 
+                        "Protocol": "HTTP", 
+                        "InstanceProtocol": "HTTP"
+                    }, 
+                    "PolicyNames": []
+                }, 
+                {
+                    "Listener": {
+                        "InstancePort": 80, 
+                        "LoadBalancerPort": 80, 
+                        "Protocol": "HTTP", 
+                        "InstanceProtocol": "HTTP"
+                    }, 
+                    "PolicyNames": []
+                }
+            ], 
+            "HealthCheck": {
+                "HealthyThreshold": 2, 
+                "Interval": 10, 
+                "Target": "HTTP:3000/", 
+                "Timeout": 5, 
+                "UnhealthyThreshold": 6
+            }, 
+            "BackendServerDescriptions": [], 
+            "Instances": [
+                {
+                    "InstanceId": "i-098495f5ab89733ec"
+                }
+            ], 
+            "DNSName": "internal-asg-1-lb-228964729.us-east-1.elb.amazonaws.com", 
+            "SecurityGroups": [
+                "sg-067da6161785559af"
+            ], 
+            "Policies": {
+                "LBCookieStickinessPolicies": [], 
+                "AppCookieStickinessPolicies": [], 
+                "OtherPolicies": []
+            }, 
+            "LoadBalancerName": "asg-1-lb", 
+            "CreatedTime": "2022-02-27T03:19:32.180Z", 
+            "AvailabilityZones": [
+                "us-east-1b", 
+                "us-east-1a"
+            ], 
+            "Scheme": "internal", 
+            "SourceSecurityGroup": {
+                "OwnerAlias": "554815294851", 
+                "GroupName": "asg-1-ALBSecurityGroup-17Y0VUE2NYOCW"
+            }
+        }
+    ]
+}

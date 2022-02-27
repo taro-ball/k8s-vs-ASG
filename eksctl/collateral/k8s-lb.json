@@ -1,0 +1,57 @@
+{
+    "LoadBalancerDescriptions": [
+        {
+            "Subnets": [
+                "subnet-0177fb259f7cb0a25",
+                "subnet-0a8162326bb0e68c6"
+            ],
+            "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K",
+            "CanonicalHostedZoneName": "a1abc2db3f8fa4306b37126d32b8782b-1183127455.us-east-1.elb.amazonaws.com",
+            "ListenerDescriptions": [
+                {
+                    "Listener": {
+                        "InstancePort": 32746,
+                        "LoadBalancerPort": 3000,
+                        "Protocol": "TCP",
+                        "InstanceProtocol": "TCP"
+                    },
+                    "PolicyNames": []
+                }
+            ],
+            "HealthCheck": {
+                "HealthyThreshold": 2,
+                "Interval": 10,
+                "Target": "TCP:32746",
+                "Timeout": 5,
+                "UnhealthyThreshold": 6
+            },
+            "VPCId": "vpc-000925d7e4935d251",
+            "BackendServerDescriptions": [],
+            "Instances": [
+                {
+                    "InstanceId": "i-02d215461cdcf162b"
+                }
+            ],
+            "DNSName": "a1abc2db3f8fa4306b37126d32b8782b-1183127455.us-east-1.elb.amazonaws.com",
+            "SecurityGroups": [
+                "sg-03ec9e486a834bbc1"
+            ],
+            "Policies": {
+                "LBCookieStickinessPolicies": [],
+                "AppCookieStickinessPolicies": [],
+                "OtherPolicies": []
+            },
+            "LoadBalancerName": "a1abc2db3f8fa4306b37126d32b8782b",
+            "CreatedTime": "2022-02-27T05:19:49.160Z",
+            "AvailabilityZones": [
+                "us-east-1b",
+                "us-east-1a"
+            ],
+            "Scheme": "internet-facing",
+            "SourceSecurityGroup": {
+                "OwnerAlias": "269082339445",
+                "GroupName": "k8s-elb-a1abc2db3f8fa4306b37126d32b8782b"
+            }
+        }
+    ]
+}

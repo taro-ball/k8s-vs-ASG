@@ -1,0 +1,104 @@
+{
+    "AutoScalingGroups": [
+        {
+            "AutoScalingGroupARN": "arn:aws:autoscaling:us-east-1:269082339445:autoScalingGroup:55946000-f26a-40a6-b48b-5573f09ecf21:autoScalingGroupName/eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+            "ServiceLinkedRoleARN": "arn:aws:iam::269082339445:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+            "TargetGroupARNs": [],
+            "SuspendedProcesses": [],
+            "DesiredCapacity": 1,
+            "MixedInstancesPolicy": {
+                "InstancesDistribution": {
+                    "SpotAllocationStrategy": "lowest-price",
+                    "OnDemandPercentageAboveBaseCapacity": 100,
+                    "OnDemandAllocationStrategy": "prioritized",
+                    "SpotInstancePools": 2,
+                    "OnDemandBaseCapacity": 0
+                },
+                "LaunchTemplate": {
+                    "LaunchTemplateSpecification": {
+                        "LaunchTemplateName": "eks-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                        "Version": "1",
+                        "LaunchTemplateId": "lt-0fcd975c4bc08879c"
+                    },
+                    "Overrides": [
+                        {
+                            "InstanceType": "t3.medium"
+                        }
+                    ]
+                }
+            },
+            "EnabledMetrics": [],
+            "Tags": [
+                {
+                    "ResourceType": "auto-scaling-group",
+                    "ResourceId": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                    "PropagateAtLaunch": true,
+                    "Value": "C888",
+                    "Key": "eks:cluster-name"
+                },
+                {
+                    "ResourceType": "auto-scaling-group",
+                    "ResourceId": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                    "PropagateAtLaunch": true,
+                    "Value": "standard-workers",
+                    "Key": "eks:nodegroup-name"
+                },
+                {
+                    "ResourceType": "auto-scaling-group",
+                    "ResourceId": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                    "PropagateAtLaunch": true,
+                    "Value": "owned",
+                    "Key": "k8s.io/cluster-autoscaler/C888"
+                },
+                {
+                    "ResourceType": "auto-scaling-group",
+                    "ResourceId": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                    "PropagateAtLaunch": true,
+                    "Value": "true",
+                    "Key": "k8s.io/cluster-autoscaler/enabled"
+                },
+                {
+                    "ResourceType": "auto-scaling-group",
+                    "ResourceId": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                    "PropagateAtLaunch": true,
+                    "Value": "owned",
+                    "Key": "kubernetes.io/cluster/C888"
+                }
+            ],
+            "AutoScalingGroupName": "eks-standard-workers-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+            "DefaultCooldown": 300,
+            "MinSize": 1,
+            "Instances": [
+                {
+                    "ProtectedFromScaleIn": false,
+                    "AvailabilityZone": "us-east-1b",
+                    "LaunchTemplate": {
+                        "LaunchTemplateName": "eks-eebf9cce-1ed1-8772-a07b-b6dad9b21eb5",
+                        "Version": "1",
+                        "LaunchTemplateId": "lt-0fcd975c4bc08879c"
+                    },
+                    "InstanceId": "i-02d215461cdcf162b",
+                    "HealthStatus": "Healthy",
+                    "LifecycleState": "InService",
+                    "InstanceType": "t3.medium"
+                }
+            ],
+            "MaxSize": 3,
+            "VPCZoneIdentifier": "subnet-0177fb259f7cb0a25,subnet-0a8162326bb0e68c6",
+            "HealthCheckGracePeriod": 15,
+            "TerminationPolicies": [
+                "AllocationStrategy",
+                "OldestLaunchTemplate",
+                "OldestInstance"
+            ],
+            "LoadBalancerNames": [],
+            "CreatedTime": "2022-02-27T05:17:42.838Z",
+            "AvailabilityZones": [
+                "us-east-1a",
+                "us-east-1b"
+            ],
+            "HealthCheckType": "EC2",
+            "NewInstancesProtectedFromScaleIn": false
+        }
+    ]
+}
