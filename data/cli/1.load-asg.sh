@@ -81,6 +81,9 @@ do
     sleep 60
 done
 
+aws elb describe-load-balancers
+aws autoscaling describe-auto-scaling-groups
+
 # performance
 for((i=1;i<=3;i+=1));
 do 

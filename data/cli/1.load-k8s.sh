@@ -66,8 +66,6 @@ aws eks update-kubeconfig --region us-east-1 --name $cluster_name
 kubectl get svc
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
-aws elb describe-load-balancers
-aws autoscaling describe-auto-scaling-groups
 
 # start k8s metrics collection
 nohup ./k8s-metrics.sh&
@@ -97,6 +95,9 @@ do
     check_stats
     sleep 60
 done
+
+aws elb describe-load-balancers
+aws autoscaling describe-auto-scaling-groups
 
 # performance
 for((i=1;i<=3;i+=1));
