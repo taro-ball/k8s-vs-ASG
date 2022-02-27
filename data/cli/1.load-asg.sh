@@ -34,7 +34,7 @@ cpu_perc=35
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-scaling_minutes=10
+scaling_minutes=13
 performance_sec=300
 max_capacity=3
 fi
@@ -119,8 +119,8 @@ done
 # note
 # date -d "+ 10 minutes" +%FT%T
 echo export t_end=$(date +%FT%T) >> metrics_vars.txt
-echo export asg_name=$myasg >> metrics_vars.txt
-echo export lb_name=$(echo $lb | cut -d "-" -f 1) >> metrics_vars.txt
+echo export asg_name=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep myASG` >> metrics_vars.txt
+echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text | grep asg` >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
 sleep 600
