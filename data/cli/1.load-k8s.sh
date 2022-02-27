@@ -4,13 +4,12 @@ mydir=`dirname "$0"`
 cd $mydir
 exec >> load-k8s.log
 exec 2>&1
-echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
-
 test=$(cat mytest)
 export AWS_DEFAULT_REGION="us-east-1"
 line='=============================='
 cluster_name="C888"
 
+echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
 
 check_stats () {
   echo [$(date +%FT%T)]${line}[STATS]

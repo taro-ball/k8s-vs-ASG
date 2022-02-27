@@ -4,18 +4,18 @@ mydir=`dirname "$0"`
 cd $mydir
 exec >> load-k8s.log
 exec 2>&1
-echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
-
 test=$(cat mytest)
-echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 export AWS_DEFAULT_REGION="us-east-1"
 line='=============================='
+cluster_name="C888"
+
+echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
 
 check_stats () {
   echo [$(date +%FT%T)]${line}[STATS]
   aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*]' | jq --raw-output '.[]| .Instances[] | (.InstanceId, .LifecycleState, .HealthStatus, {})'
 }
-
+set -x
 if [ "$test" == "asg_apache3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
@@ -38,9 +38,17 @@ scaling_minutes=10
 performance_sec=300
 max_capacity=3
 fi
-
+set +x
 # wait for the asg stack to come up
-sleep 600
+while [ -z "$myasg" ]
+do 
+myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep myASG`
+echo [$(date +%FT%T)] waiting for asg...
+sleep 60;
+done
+
+# wait for a bit more
+sleep 90;
 
 echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 
