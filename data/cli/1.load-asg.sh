@@ -47,6 +47,9 @@ echo [$(date +%FT%T)] waiting for asg...
 sleep 60;
 done
 
+aws elb describe-load-balancers
+aws autoscaling describe-auto-scaling-groups
+
 # wait for a bit more
 sleep 90;
 

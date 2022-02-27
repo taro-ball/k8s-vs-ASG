@@ -67,6 +67,7 @@ kubectl get svc
 # get lb
 lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
 aws elb describe-load-balancers
+aws autoscaling describe-auto-scaling-groups
 
 # start k8s metrics collection
 nohup ./k8s-metrics.sh&
