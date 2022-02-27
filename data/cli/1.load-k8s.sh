@@ -120,7 +120,7 @@ do
     kubectl scale --replicas=1 deployment/taro-deployment
     eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
     
-    echo [$(date +%FT%T)]${line}[SCALING HPA - SLEEP]${line}
+    echo [$(date +%FT%T)]${line}[ENABLE SCALING - SLEEP]${line}
     sleep 160;
     # create the hpa
     kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods

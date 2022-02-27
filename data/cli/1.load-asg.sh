@@ -92,19 +92,26 @@ echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 # scaling
 for((i=1;i<=3;i+=1));
 do
-
+    echo [$(date +%FT%T)]${line}[SCALING DOWN]${line}
     # 99cpu policy to prevent immideate scaleout on historical data
     aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
 
 	# scale to min
     echo scaling to 1;
     aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --desired-capacity 1;
-    
+    echo [$(date +%FT%T)]${line}[ENABLE SCALING - SLEEP]${line}
     sleep 180;
         # back to initial policy
         aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
-
-    fortio load -a -c $warmup_max_threads -t ${scaling_sec}s -qps -1 -r 0.01 -labels "$test-scaling-${i}" http://$lb:$testing_url
+    
+    echo [$(date +%FT%T)]${line}[SCALING RUN ${i}]${line}
+    for((y=1;y<=$scaling_minutes;y+=1));
+    do
+    check_stats
+    fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "$test-scaling-${i}-${y}" http://$lb:$testing_url
+    # check_stats
+    done
+    check_stats
 done
 # note
 # date -d "+ 10 minutes" +%FT%T
