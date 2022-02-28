@@ -2,9 +2,9 @@
 
 autotest=$1
 if  [ -z "$1" ]; then
-#cat data/cli/1.load-asg.sh data/cli/1.load-k8s.sh | egrep 'asg_|k8s_'
-#read -p "No test specified. Press enter to deploy all, ctrl+c to abort."
-autotest=k8s_node3
+cat data/cli/1.load-asg.sh data/cli/1.load-k8s.sh | egrep 'asg_|k8s_'
+read -p "No test specified. Press enter to deploy all, ctrl+c to abort."
+#autotest=k8s_node3
 fi
 
 set -x

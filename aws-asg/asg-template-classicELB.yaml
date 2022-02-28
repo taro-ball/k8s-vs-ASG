@@ -171,14 +171,14 @@ Resources:
       Subnets:
         - !Ref mySubnet1
         - !Ref mySubnet2
-      Scheme: internal
+      Scheme: internet-facing
       Listeners:
         - LoadBalancerPort: 80
           InstancePort: 80
-          Protocol: HTTP
+          Protocol: TCP
         - LoadBalancerPort: 3000
           InstancePort: 3000
-          Protocol: HTTP
+          Protocol: TCP
       HealthCheck:
         Target:
           Fn::Join:
