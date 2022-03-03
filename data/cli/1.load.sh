@@ -16,13 +16,13 @@ source .k8sSecrets.noupl
 aws sts get-caller-identity
 
 ############# Functions #############
-check_stats (type) {
+check_stats () {
   echo [$(date +%FT%T)]${line}[STATS]
-  if [ "$type" == "asg" ]; then
+  if [ "$1" == "asg" ]; then
     aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*]' | \
     jq --raw-output '.[]| .Instances[] | (.InstanceId, .LifecycleState, .HealthStatus, {})'
   fi
-  if [ "$type" == "k8s" ]; then
+  if [ "$1" == "k8s" ]; then
     kubectl get hpa
     kubectl get deployment
     kubectl top nodes
@@ -82,10 +82,10 @@ curl http://$lb:$warmup_url; echo
 ############### LB warmup run ###############
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
-    check_stats
+    check_stats $type
     echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
     fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup-${i}" http://$lb:$warmup_url
-    check_stats
+    check_stats $type
     sleep 60
 done
 
@@ -96,10 +96,10 @@ aws autoscaling describe-auto-scaling-groups
 for((i=1;i<=3;i+=1));
 do 
     sleep 60
-    check_stats
+    check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
     fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
-    check_stats
+    check_stats $type
 done
 
 echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
@@ -141,11 +141,11 @@ do
     echo [$(date +%FT%T)]${line}[SCALING RUN ${i}: FORTIO]${line}
     for((y=1;y<=$scaling_minutes;y+=1));
     do
-      check_stats
+      check_stats $type
       fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "$test-scaling-${i}-${y}" http://$lb:$testing_url
-    # check_stats
+    # check_stats $type
     done
-    check_stats
+    check_stats $type
 done
 
 echo export asg_name=$myasg >> metrics_vars.txt
