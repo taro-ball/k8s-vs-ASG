@@ -2,7 +2,7 @@
 #set -x
 mydir=`dirname "$0"`
 cd $mydir
-exec >> load-k8s.log
+exec >> load-asg.log
 exec 2>&1
 test=$(cat mytest)
 export AWS_DEFAULT_REGION="us-east-1"
