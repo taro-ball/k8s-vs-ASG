@@ -148,12 +148,13 @@ do
     check_stats
 done
 
-echo export t_end=$(date +%FT%T) >> metrics_vars.txt
 echo export asg_name=$myasg >> metrics_vars.txt
-echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text | grep asg` >> metrics_vars.txt
+echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
-sleep 600
+sleep 300
+echo export t_end=$(date +%FT%T) >> metrics_vars.txt
+
 echo [$(date +%FT%T)]${line}[GET DATA]${line}
 ./2.jh-get-data.sh
 echo [$(date +%FT%T)]${line}[UPLOAD $(cat 3.upload.noupl.sh | rev | cut -d "." -f 1 | rev)]${line} 
