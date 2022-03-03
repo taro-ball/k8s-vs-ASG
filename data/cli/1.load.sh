@@ -42,7 +42,6 @@ do
   echo [$(date +%FT%T)] waiting for instances ...
   sleep 60;
 done
-fi
 
 # wait for stack to stabilise
 sleep 240
