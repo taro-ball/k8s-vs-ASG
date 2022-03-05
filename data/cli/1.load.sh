@@ -59,7 +59,7 @@ if [ "$type" == "asg" ]; then
   policy_json='{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue":'" ${cpu_perc}.0, "'"DisableScaleIn": false}'
   # set max, scale to max
   echo scaling to $max_capacity;
-  aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --desired-capacity $max_capacity --max-size $max_capacity
+  aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity $max_capacity --max-size $max_capacity
 fi
 if [ "$type" == "k8s" ]; then
   # log on to k8s
@@ -69,7 +69,7 @@ if [ "$type" == "k8s" ]; then
   lb=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
   # enable workers ASG metrics
-  aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
+  aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
   # start k8s metrics collection
   nohup ./k8s-metrics.sh&
   # enable hpa 
@@ -78,14 +78,14 @@ fi
 
 
 # quick test
-curl http://$lb:$warmup_url; echo
+curl http://${lb_dns}:${warmup_url}; echo
 
 ############### LB warmup run ###############
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats $type
     echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
-    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "${test}-warmup-${i}" http://$lb:$warmup_url
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "${test}-warmup-${i}" http://${lb_dns}:${warmup_url}
     check_stats $type
     sleep 60
 done
@@ -99,9 +99,19 @@ do
     sleep 60
     check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
-    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://${lb_dns}:${testing_url}
     check_stats $type
 done
+
+############### Performance chunck run ###############
+echo [$(date +%FT%T)]${line}[PERFORMANCE 5 CHUNK RUN ${i}]${line}
+sleep 60
+    for((x=1;x<=5;x+=1));
+    do
+      check_stats $type
+      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
+    # check_stats $type
+    done
 
 echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 
@@ -111,14 +121,14 @@ do
     echo [$(date +%FT%T)]${line}[SCALING RUN $i: INIT]${line}
     if [ "$type" == "asg" ]; then
       # 99cpu policy to prevent immideate scaleout on historical data
-      aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
+      aws autoscaling put-scaling-policy --auto-scaling-group-name ${myasg} --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
       # scale to min
       echo scaling to 1;
-      aws autoscaling update-auto-scaling-group --auto-scaling-group-name $myasg --desired-capacity 1;
+      aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity 1;
       echo [$(date +%FT%T)]${line}[SCALING RUN $i: ENABLE SCALING - SLEEP]${line}
       sleep 160;
       # back to initial policy
-      aws autoscaling put-scaling-policy --auto-scaling-group-name $myasg --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "$policy_json"
+      aws autoscaling put-scaling-policy --auto-scaling-group-name ${myasg} --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration "${policy_json}"
     fi
     if [ "$type" == "k8s" ]; then
       # delete hpa to prevent immediate scaleout on historical data
@@ -143,13 +153,13 @@ do
     for((y=1;y<=$scaling_minutes;y+=1));
     do
       check_stats $type
-      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://$lb:$testing_url
+      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://${lb_dns}:${testing_url}
     # check_stats $type
     done
     check_stats $type
 done
 
-echo export asg_name=$myasg >> metrics_vars.txt
+echo export asg_name=${myasg} >> metrics_vars.txt
 echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
