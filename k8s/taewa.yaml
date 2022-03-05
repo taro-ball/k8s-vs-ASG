@@ -2,34 +2,34 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: taro-svc
+  name: taewa-svc
   labels:
-    env: taro
+    env: taewa
 spec:
   type: LoadBalancer
   ports:
   - port: 3000
   selector:
-    env: taro
+    env: taewa
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: taro-deployment
+  name: taewa-deployment
   labels:
-    env: taro
+    env: taewa
 spec:
   replicas: 1
   selector:
     matchLabels:
-      env: taro
+      env: taewa
   template:
     metadata:
       labels:
-        env: taro
+        env: taewa
     spec:
       containers:
-      - name: taro
+      - name: taewa
         image: taroball/taro1:smplc3393f8
         ports:
         - containerPort: 3000

@@ -21,14 +21,14 @@ cd ..
 
 if  [ "${autotest:0:3}" != "k8s" ]; then
 cd aws-asg
-./DeployAutodetect.sh 1
+./DeployAutodetect.sh 1 $autotest
 cd ..
 fi
 
 if  [ "${autotest:0:3}" != "asg" ]; then
 eksctl create cluster -f eksctl/Cgenerated.yml
 cd k8s
-./apply-k8s.sh
+./apply-k8s.sh $autotest
 cd ..
 fi
 

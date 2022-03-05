@@ -3,7 +3,8 @@
 mydir=`dirname "$0"`
 cd $mydir
 test=$(cat mytest)
-type=${test:0:3}
+type=$(echo $1 | cut -d "_" -f 1)
+app=$(echo $1 | cut -d "_" -f 2)
 exec >> load-${type}.log
 exec 2>&1
 export AWS_DEFAULT_REGION="us-east-1"
@@ -64,14 +65,14 @@ if [ "$type" == "k8s" ]; then
   aws eks update-kubeconfig --name $cluster_name
   kubectl get svc # quick check
   # get lb
-  lb=`kubectl get svc/taro-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
+  lb=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
   # enable workers ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name $myasg --granularity "1Minute"
   # start k8s metrics collection
   nohup ./k8s-metrics.sh&
-  # already scaled? maybe make sure in the script as well
-
+  # enable hpa 
+  kubectl autoscale deployment ${app}-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 fi
 
 
@@ -83,7 +84,7 @@ for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats $type
     echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
-    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "$test-warmup-${i}" http://$lb:$warmup_url
+    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "${test}-warmup-${i}" http://$lb:$warmup_url
     check_stats $type
     sleep 60
 done
@@ -97,7 +98,7 @@ do
     sleep 60
     check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
-    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "$test-performance-${i}" http://$lb:$testing_url
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://$lb:${test}ing_url
     check_stats $type
 done
 
@@ -120,17 +121,17 @@ do
     fi
     if [ "$type" == "k8s" ]; then
       # delete hpa to prevent immediate scaleout on historical data
-      kubectl delete horizontalpodautoscaler.autoscaling/taro-deployment
+      kubectl delete horizontalpodautoscaler.autoscaling/${app}-deployment
 
       # scale to min
       echo scaling to 1;
-      kubectl scale --replicas=1 deployment/taro-deployment
+      kubectl scale --replicas=1 deployment/${app}-deployment
       eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=1
       
       echo [$(date +%FT%T)]${line}[SCALING RUN $i: ENABLE SCALING - SLEEP]${line}
       sleep 160;
       # create the hpa
-      kubectl autoscale deployment taro-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
+      kubectl autoscale deployment ${app}-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
       # wait for hpa to get metrics
 
     fi
@@ -141,7 +142,7 @@ do
     for((y=1;y<=$scaling_minutes;y+=1));
     do
       check_stats $type
-      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "$test-scaling-${i}-${y}" http://$lb:$testing_url
+      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://$lb:${test}ing_url
     # check_stats $type
     done
     check_stats $type
