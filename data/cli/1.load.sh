@@ -99,7 +99,7 @@ do
     sleep 60
     check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
-    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://$lb:${test}ing_url
+    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://$lb:$testing_url
     check_stats $type
 done
 
@@ -143,7 +143,7 @@ do
     for((y=1;y<=$scaling_minutes;y+=1));
     do
       check_stats $type
-      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://$lb:${test}ing_url
+      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://$lb:$testing_url
     # check_stats $type
     done
     check_stats $type
