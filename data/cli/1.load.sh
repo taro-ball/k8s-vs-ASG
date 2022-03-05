@@ -3,11 +3,11 @@ set -x
 mydir=`dirname "$0"`
 cd $mydir
 test=$(cat mytest)
-echo $(cut -d "_" -f 1 <<< $test)
 type=$(echo $test | cut -d "_" -f 1)
-app=$(echo $test | cut -d "_" -f 2)
 exec >> load-${type}.log
 exec 2>&1
+echo $(cut -d "_" -f 1 <<< $test)
+app=$(echo $test | cut -d "_" -f 2)
 export AWS_DEFAULT_REGION="us-east-1"
 line='=============================='
 
@@ -53,7 +53,7 @@ echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 ############### Prepare to run the load test ###############
 if [ "$type" == "asg" ]; then
   # get lb, asg and policy
-  lb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
+  lb_dns=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
   mypolicy_name=`aws autoscaling describe-policies --query "ScalingPolicies[*].PolicyName" --output text | sed 's/\s\+/\n/g' | grep asg`
   policy_json='{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue":'" ${cpu_perc}.0, "'"DisableScaleIn": false}'
@@ -66,7 +66,7 @@ if [ "$type" == "k8s" ]; then
   aws eks update-kubeconfig --name $cluster_name
   kubectl get svc # quick check
   # get lb
-  lb=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
+  lb_dns=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
   # enable workers ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
