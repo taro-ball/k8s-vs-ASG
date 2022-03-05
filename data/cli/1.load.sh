@@ -1,10 +1,11 @@
 #!/usr/bin/bash
-#set -x
+set -x
 mydir=`dirname "$0"`
 cd $mydir
 test=$(cat mytest)
-type=$(echo $1 | cut -d "_" -f 1)
-app=$(echo $1 | cut -d "_" -f 2)
+echo $(cut -d "_" -f 1 <<< $test)
+type=$(echo $test | cut -d "_" -f 1)
+app=$(echo $test | cut -d "_" -f 2)
 exec >> load-${type}.log
 exec 2>&1
 export AWS_DEFAULT_REGION="us-east-1"
