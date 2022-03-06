@@ -33,10 +33,10 @@ if [ "$test" == "asg_apache_3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
 cpu_perc=70
-warmup_min_threads=65
-warmup_max_threads=75
-warmup_cycle_sec=90
-scaling_minutes=15
+warmup_min_threads=25
+warmup_max_threads=35
+warmup_cycle_sec=120
+scaling_minutes=11
 performance_sec=300
 max_capacity=3
 fortio_options="-a -qps -1 -r 0.01"
