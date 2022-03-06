@@ -185,5 +185,7 @@ echo export t_end=$(date +%FT%T) >> metrics_vars.txt
 
 echo [$(date +%FT%T)]${line}[GET DATA]${line}
 ./2.jh-get-data.sh
-echo [$(date +%FT%T)]${line}[UPLOAD $(cat 3.upload.noupl.sh | rev | cut -d "." -f 1 | rev)]${line} 
+echo [$(date +%FT%T)]${line}[UPLOAD $(cat 3.upload.noupl.sh | rev | cut -d "." -f 1 | rev)]${line}
+# in case logs grow big, compress them
+find . -maxdepth 1 -type f -size +500k -exec zip -m9 backup {} \;
 ./3.upload.noupl.sh
