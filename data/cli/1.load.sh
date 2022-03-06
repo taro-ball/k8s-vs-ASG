@@ -30,7 +30,7 @@ check_stats () {
     kubectl get deployment
     kubectl top nodes
     #make sure all nodes have monitoring on
-    aws ec2 monitor-instances --instance-ids `aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].Instances[*].InstanceId' --output text`  > /dev/null
+    aws ec2 monitor-instances --instance-ids `aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].Instances[*].InstanceId' --output text` --output text # > /dev/null
   fi
 }
 
