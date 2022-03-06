@@ -28,9 +28,9 @@ check_stats () {
   if [ "$1" == "k8s" ]; then
     kubectl get hpa
     kubectl get deployment
-    kubectl top nodes
+    kubectl top nodes 2> /dev/null
     #make sure all nodes have monitoring on
-    aws ec2 monitor-instances --instance-ids `aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].Instances[*].InstanceId' --output text` --output text # > /dev/null
+    aws ec2 monitor-instances --instance-ids `aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].Instances[*].InstanceId' --output text` --output text | grep enabled # > /dev/null
   fi
 }
 
