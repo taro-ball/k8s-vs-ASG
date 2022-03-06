@@ -1,9 +1,11 @@
 #!/bin/bash
 
 autotest=$1
-if  [ -z "$1" ]; then
-cat data/cli/1.load-asg.sh data/cli/1.load-k8s.sh | egrep 'asg_|k8s_'
-read -p "No test specified. Press enter to deploy all, ctrl+c to abort."
+match=`cat data/cli/0.setup.sh | grep $1 2> /dev/null`
+if  [ -z $match ]; then
+echo Test name not recognized. Valid options:
+egrep -ho 'asg_\w+|k8s_\w+' data/cli/0.setup.sh
+read -p "Press enter to deploy all or [ctrl]+[c] to abort."
 #autotest=k8s_node3
 fi
 

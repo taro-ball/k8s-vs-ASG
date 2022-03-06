@@ -5,8 +5,8 @@ cd $mydir
 test=$(cat mytest)
 type=$(cut -d "_" -f 1 <<< $test)
 exec >> load-${type}.log
-#exec 2>&1
-exec 2> load-errors.log
+exec 2>&1
+# exec 2> load-errors.log # also sends all fortio output to err log
 git log -3
 app=$(cut -d "_" -f 2 <<< $test)
 export AWS_DEFAULT_REGION="us-east-1"
@@ -102,7 +102,7 @@ for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
 do
     check_stats $type
     echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
-    fortio load -a -c $i -t ${warmup_cycle_sec}s -qps -1 -r 0.01 -labels "${test}-warmup-${i}" http://${lb_dns}:${warmup_url}
+    fortio load ${fortio_options} -c $i -t ${warmup_cycle_sec}s -labels "${test}-warmup-${i}" http://${lb_dns}:${warmup_url}
     check_stats $type
     sleep 60
 done
@@ -116,7 +116,7 @@ do
     sleep 60
     check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
-    fortio load -a -c $warmup_max_threads -t ${performance_sec}s -qps -1 -r 0.01 -labels "${test}-performance-${i}" http://${lb_dns}:${testing_url}
+    fortio load ${fortio_options} -c $warmup_max_threads -t ${performance_sec}s -labels "${test}-performance-${i}" http://${lb_dns}:${testing_url}
     check_stats $type
 done
 
@@ -126,7 +126,7 @@ sleep 60
     for((x=1;x<=5;x+=1));
     do
       check_stats $type
-      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
+      fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
     # check_stats $type
     done
 
@@ -170,7 +170,7 @@ do
     for((y=1;y<=$scaling_minutes;y+=1));
     do
       check_stats $type
-      fortio load -quiet -a -c $warmup_max_threads -t 60s -qps -1 -r 0.01 -labels "${test}-scaling-${i}-${y}" http://${lb_dns}:${testing_url}
+      fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-scaling-${i}-${y}" http://${lb_dns}:${testing_url}
     # check_stats $type
     done
     check_stats $type
