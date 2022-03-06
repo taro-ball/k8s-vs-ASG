@@ -3,8 +3,8 @@ if [ "$test" == "k8s_apache_3" ]; then
 warmup_url='80'
 testing_url='80'
 hpa_perc=70
-warmup_min_threads=30
-warmup_max_threads=40
+warmup_min_threads=25
+warmup_max_threads=35
 warmup_cycle_sec=120
 scaling_minutes=10
 performance_sec=300

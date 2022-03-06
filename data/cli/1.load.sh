@@ -5,7 +5,8 @@ cd $mydir
 test=$(cat mytest)
 type=$(cut -d "_" -f 1 <<< $test)
 exec >> load-${type}.log
-exec 2>&1
+#exec 2>&1
+exec 2> load-errors.log
 app=$(cut -d "_" -f 2 <<< $test)
 export AWS_DEFAULT_REGION="us-east-1"
 line='=============================='
@@ -44,6 +45,18 @@ do
   sleep 60;
 done
 
+
+if [ "$type" == "k8s" ]; then
+  # enable advanced metrics
+  template_name=`aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-`
+  aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
+  aws ec2 modify-launch-template --launch-template-name ${template_name} --default-version 2
+
+  aws autoscaling start-instance-refresh \
+    --auto-scaling-group-name $myasg
+    #--preferences '{"InstanceWarmup": 400, "MinHealthyPercentage": 50}'
+fi
+
 # wait for stack to stabilise
 sleep 240
 
@@ -67,15 +80,7 @@ if [ "$type" == "k8s" ]; then
   # get lb
   lb_dns=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
-  # enable advanced metrics
-  template_name=aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-
-  aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
-  aws ec2 modify-launch-template --launch-template-name ${template_name} --default-version 2
 
-  aws autoscaling start-instance-refresh \
-    --auto-scaling-group-name $myasg
-    #--preferences '{"InstanceWarmup": 400, "MinHealthyPercentage": 50}'
-    
   # enable workers ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
   # start k8s metrics collection
