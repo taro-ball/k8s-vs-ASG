@@ -47,14 +47,15 @@ done
 
 
 if [ "$type" == "k8s" ]; then
-  # enable advanced metrics
+  myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
+  # enable advanced ec2 metrics in the lt
   template_name=`aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-`
   aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
   aws ec2 modify-launch-template --launch-template-name ${template_name} --default-version 2
-
-  aws autoscaling start-instance-refresh \
-    --auto-scaling-group-name $myasg
-    #--preferences '{"InstanceWarmup": 400, "MinHealthyPercentage": 50}'
+  # refresh asg to apply the lt
+  aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg #--preferences '{"InstanceWarmup": 400, "MinHealthyPercentage": 50}'
+  # enable worker ASG metrics
+  aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
 fi
 
 # wait for stack to stabilise
@@ -79,10 +80,7 @@ if [ "$type" == "k8s" ]; then
   kubectl get svc # quick check
   # get lb
   lb_dns=`kubectl get svc/${app}-svc -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'`
-  myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
 
-  # enable workers ASG metrics
-  aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
   # start k8s metrics collection
   nohup ./k8s-metrics.sh&
   # enable hpa 
@@ -172,7 +170,7 @@ do
     check_stats $type
 done
 
-echo export asg_name=${myasg} >> metrics_vars.txt
+echo export asg_name=${myasg} >> metrics_vars.txt # see line 50 or 70
 echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
