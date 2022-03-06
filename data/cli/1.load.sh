@@ -7,6 +7,7 @@ type=$(cut -d "_" -f 1 <<< $test)
 exec >> load-${type}.log
 #exec 2>&1
 exec 2> load-errors.log
+git log -3
 app=$(cut -d "_" -f 2 <<< $test)
 export AWS_DEFAULT_REGION="us-east-1"
 line='=============================='
@@ -28,6 +29,8 @@ check_stats () {
     kubectl get hpa
     kubectl get deployment
     kubectl top nodes
+    #make sure all nodes have monitoring on
+    aws ec2 monitor-instances --instance-ids `aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].Instances[*].InstanceId' --output text`  > /dev/null
   fi
 }
 
@@ -48,12 +51,15 @@ done
 
 if [ "$type" == "k8s" ]; then
   myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
-  # enable advanced ec2 metrics in the lt
+  # enable advanced ec2 metrics in the lt (have to apply new ver in console mannually)
   template_name=`aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-`
   aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
   aws ec2 modify-launch-template --launch-template-name ${template_name} --default-version 2
-  # refresh asg to apply the lt
-  aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg #--preferences '{"InstanceWarmup": 400, "MinHealthyPercentage": 50}'
+  aws autoscaling update-auto-scaling-group \
+    --auto-scaling-group-name $myasg \
+    --launch-template LaunchTemplateName=${template_name},Version='$Latest'
+  ## refresh asg to apply the lt (disabled auto apply as it doesn't seem to work, see 6 March notes)
+  # aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg
   # enable worker ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
 fi
