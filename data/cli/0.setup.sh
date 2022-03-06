@@ -11,7 +11,7 @@ performance_sec=300
 cluster_name="C888"
 max_pods=6
 max_nodes=3
-fortio_options="-a -qps -1 -r 0.01 -loglevel Critical"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error"
 fi
 
 if [ "$test" == "k8s_taewa_3" ]; then
@@ -39,7 +39,7 @@ warmup_cycle_sec=120
 scaling_minutes=11
 performance_sec=300
 max_capacity=3
-fortio_options="-a -qps -1 -r 0.01"
+fortio_options="-a -qps -1 -r 0.01  -loglevel Error"
 fi
 
 if [ "$test" == "asg_taewa_3" ]; then
