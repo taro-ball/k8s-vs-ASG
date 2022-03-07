@@ -97,7 +97,7 @@ Resources:
           cd /tmp
           git clone https://test-script:${repotoken}@${repourl}
 
-          comhash=`git rev-parse --short HEAD | cut -c1-4`
+          comhash=`git --git-dir=/tmp/k8s-vs-ASG/.git rev-parse --short HEAD | cut -c1-4`
           date_folder=$(date +"%Y.%m.%d_%H-%M")_${autotest}_$comhash
 
           cd $script_path
