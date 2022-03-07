@@ -96,9 +96,11 @@ Resources:
 
           cd /tmp
           git clone https://test-script:${repotoken}@${repourl}
-          date_folder=$(date +"%Y.%m.%d_%H-%M")_${autotest}
 
-          cd ${!script_path}
+          comhash=`git rev-parse --short HEAD | cut -c1-4`
+          date_folder=$(date +"%Y.%m.%d_%H-%M")_${autotest}_$comhash
+
+          cd $script_path
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
           echo $cc > 3.upload.noupl.sh
 
