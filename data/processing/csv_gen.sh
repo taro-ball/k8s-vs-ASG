@@ -4,7 +4,7 @@
 if [ -z "$1" ]; then
     echo no target directory specified
     echo please specify a directory or run over all subdirectories by running:
-    echo find "./2022.03*" -maxdepth 1 -type d -exec ./csv_gen.sh {} \\\;
+    echo find "./2022.03*" -maxdepth 0 -type d -exec ./csv_gen.sh {} \\\;
     # echo 'find -path "./2022.03*" -prune -type d | xargs -L 1 ./csv_gen.sh' (this one ignores ctrl+c)
     exit
 fi
