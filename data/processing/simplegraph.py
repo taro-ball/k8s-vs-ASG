@@ -28,13 +28,11 @@ if out_file.exists() and not p.overwrite:
   quit()
 
 df = pd.read_csv(file, parse_dates=['datetime'], index_col="datetime")
-#df.plot()
 df2=df.resample('60S').mean() # show gaps, see https://stackoverflow.com/questions/38572534/pandas-plot-time-series-with-minimized-gaps
 
 #ydata = df2.iloc[:, 0]
 #print(ydata.max())
 #tks=np.arange(0, ydata.max(), round(ydata.max()/20))
-#tks=()
 
 plot = df2.plot(kind='line',grid=1,figsize=(7,3.5)) #yticks=tks
 fig = plot.get_figure()
