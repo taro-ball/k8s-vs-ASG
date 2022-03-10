@@ -5,6 +5,8 @@ import pathlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file_path", type=pathlib.Path)
+parser.add_argument("--overwrite", help="overwrite destination",
+                    action="store_true")
 
 p = parser.parse_args()
 
@@ -19,11 +21,21 @@ else:
 file=p.file_path
 #fileName=file.name
 #dir=file.parent
+
 out_file=file.with_suffix('.png')
+if out_file.exists() and not p.overwrite:
+  print("Output already exists. Skip.")
+  quit()
 
-df = pd.read_csv(file, parse_dates=['date'], index_col="date")
+df = pd.read_csv(file, parse_dates=['datetime'], index_col="datetime")
 #df.plot()
+df2=df.resample('60S').mean() # show gaps, see https://stackoverflow.com/questions/38572534/pandas-plot-time-series-with-minimized-gaps
 
-plot = df.plot(kind='line',grid=1,figsize=(7,3.5),yticks=(np.arange(0, 100, 5)))
+#ydata = df2.iloc[:, 0]
+#print(ydata.max())
+#tks=np.arange(0, ydata.max(), round(ydata.max()/20))
+#tks=()
+
+plot = df2.plot(kind='line',grid=1,figsize=(7,3.5)) #yticks=tks
 fig = plot.get_figure()
 fig.savefig(out_file)
