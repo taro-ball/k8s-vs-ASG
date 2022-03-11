@@ -98,6 +98,10 @@ fi
 
 # quick test
 curl http://${lb_dns}:${warmup_url}; echo
+# save vars for metric query
+echo export asg_name=${myasg} >> metrics_vars.txt
+echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
+
 
 ############### LB warmup run ###############
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
@@ -177,9 +181,6 @@ do
     done
     check_stats $type
 done
-
-echo export asg_name=${myasg} >> metrics_vars.txt # see line 50 or 70
-echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
 
 # wait for CloudWatch logs to catch up
 sleep 300
