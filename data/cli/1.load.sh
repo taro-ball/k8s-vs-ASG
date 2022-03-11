@@ -21,6 +21,8 @@ aws sts get-caller-identity
 ############# Functions #############
 check_stats () {
   echo [$(date +%FT%T)]${line}[STATS]
+  echo jh CPU load avg:
+  cat /proc/loadavg
   if [ "$1" == "asg" ]; then
     aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*]' | \
     jq --raw-output '.[]| .Instances[] | (.InstanceId, .LifecycleState, .HealthStatus, {})'
