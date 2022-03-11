@@ -3,9 +3,9 @@ if [ "$test" == "k8s_apache_3" ]; then
 warmup_url='80'
 testing_url='80'
 hpa_perc=70
-warmup_min_threads=65
-warmup_max_threads=75
-warmup_cycle_sec=150
+warmup_min_threads=60
+warmup_max_threads=70
+warmup_cycle_sec=130
 scaling_minutes=14
 performance_sec=300
 cluster_name="C888"
@@ -33,9 +33,9 @@ if [ "$test" == "asg_apache_3" ]; then
 warmup_url='80/test.html'
 testing_url='80/test.html'
 cpu_perc=70
-warmup_min_threads=65
-warmup_max_threads=75
-warmup_cycle_sec=150
+warmup_min_threads=60
+warmup_max_threads=70
+warmup_cycle_sec=130
 scaling_minutes=14
 performance_sec=300
 max_capacity=3
