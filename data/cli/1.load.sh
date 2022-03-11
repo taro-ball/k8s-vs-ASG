@@ -112,6 +112,16 @@ done
 aws elb describe-load-balancers
 aws autoscaling describe-auto-scaling-groups
 
+############### Performance chunk run ###############
+echo [$(date +%FT%T)]${line}[PERFORMANCE CHUNK RUN ${i}]${line}
+sleep 60
+    for((x=1;x<=5;x+=1));
+    do
+      check_stats $type
+      fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
+    # check_stats $type
+    done
+
 ############### Performance run ###############
 for((i=1;i<=3;i+=1));
 do 
@@ -121,16 +131,6 @@ do
     fortio load ${fortio_options} -c $warmup_max_threads -t ${performance_sec}s -labels "${test}-performance-${i}" http://${lb_dns}:${testing_url}
     check_stats $type
 done
-
-############### Performance chunck run ###############
-echo [$(date +%FT%T)]${line}[PERFORMANCE 5 CHUNK RUN ${i}]${line}
-sleep 60
-    for((x=1;x<=5;x+=1));
-    do
-      check_stats $type
-      fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
-    # check_stats $type
-    done
 
 echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 
