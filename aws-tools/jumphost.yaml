@@ -46,6 +46,9 @@ Parameters:
   authsecret:
     Type: String
     NoEcho : true
+  mailjet:
+    Type: String
+    NoEcho : true
 
 Resources:
 
@@ -102,28 +105,20 @@ Resources:
           date_folder=$(date +"%Y.%m.%d_%H-%M")_${autotest}_$comhash
 
           cd $script_path
+
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
           echo $cc > 3.upload.noupl.sh
+          
+          echo -e '\n\ncurl -s -X POST --user "'${mailjet}'" https://api.mailjet.com/v3.1/send -H '\''Content-Type: application/json'\'' -d '\''{"Messages":[{"From": {"Email": "le4mmbede@mozmail.com","Name": "aws script"},"To": [{"Email": "taro.ball@outlook.com"}],"Subject": "'${autotest}' run complete","TextPart": "Greetings master."}]}'\' >> 3.upload.noupl.sh
 
-          # echo -e export AWS_ACCESS_KEY_ID=${authkey}\; export AWS_SECRET_ACCESS_KEY=${authsecret} > .k8sSecrets
-          # echo -e 'Access key ID,Secret access key\n'${authkey},${authsecret} > credentials.csv
           echo aws configure set aws_access_key_id ${authkey}\; aws configure set aws_secret_access_key ${authsecret} > .k8sSecrets.noupl
+          echo ${autotest} > mytest
 
           chmod +x *.sh
           chmod -R a+rw /tmp/
 
-          mytest=${autotest}
-          echo $mytest > mytest
-          
-          # if [ "${!mytest:0:3}" == "asg" ]; then
-          # runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load-asg.sh&" | at now'
-          # fi
-          # if [ "${!mytest:0:3}" == "k8s" ]; then
-          # # nohup ./1.load-k8s.sh ${autotest} &
-          # runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load-k8s.sh&" | at now'
-          # fi
-
           runuser -l  root -c 'echo "nohup /tmp/k8s-vs-ASG/data/cli/1.load.sh&" | at now'
+          
           # make sure "at" started
           sleep 10
 

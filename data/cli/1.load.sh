@@ -183,7 +183,7 @@ do
 done
 
 # wait for CloudWatch logs to catch up
-sleep 300
+sleep 180
 echo export t_end=$(date +%FT%T) >> metrics_vars.txt
 
 echo [$(date +%FT%T)]${line}[GET DATA]${line}
