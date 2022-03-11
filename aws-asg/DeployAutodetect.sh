@@ -18,5 +18,6 @@ aws cloudformation create-stack\
  ParameterKey=myVPC,ParameterValue=${vpcID}\
  ParameterKey=mySubnet1,ParameterValue=${sbnt1ID}\
  ParameterKey=mySubnet2,ParameterValue=${sbnt2ID}\
- ParameterKey=AMIimageID,ParameterValue=${AMI}
+ ParameterKey=AMIimageID,ParameterValue=${AMI} \
+ ParameterKey=autotest,ParameterValue=$2
  #ParameterKey=myAPPport,ParameterValue=3000

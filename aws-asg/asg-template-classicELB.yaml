@@ -36,7 +36,9 @@ Parameters:
     Description:
       The S3 bucket containing app
     Type: String
-    Default: pasha-test1
+    Default: test1
+  autotest:
+    Type: String
 
 Resources:
   myLaunchTemplate:
@@ -67,16 +69,26 @@ Resources:
             # setup test app
             yum update -y
             yum install htop -y
-            yum install -y httpd-2.4.52-1.amzn2.x86_64
 
-            service httpd start 
-            echo "<html><body><h1>ASGworks1</h1></body></html>" > /var/www/html/test.html
+            app=`cut -d "_" -f 2 <<< ${autotest}`
 
-            cd /tmp/
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install 16.13.1
+            if [ "$app" == "apache" ]; then
+              yum install -y httpd-2.4.52-1.amzn2.x86_64
+              service httpd start 
+              echo "<html><body><h1>ASGworks1</h1></body></html>" > /var/www/html/test.html
+            fi
+
+            if [ "$app" == "taewa" ]; then
+              cd /tmp/
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm install 16.13.1
+
+              curl -L -o app.zip https://github.com/taro-ball/GemCity/raw/master/other/smplc3393f8.zip
+              unzip app.zip
+              node simpleserver.js
+            fi
 
             # curl -o /tmp/node-v16.13.1-linux-x64.tar.xz https://nodejs.org/dist/v16.13.1/node-v16.13.1-linux-x64.tar.xz
             # mkdir -p /usr/local/lib/nodejs
@@ -88,12 +100,11 @@ Resources:
             # unzip app.zip
             # cd app
 
-            curl -L -o app.zip https://github.com/taro-ball/GemCity/raw/master/other/smplc3393f8.zip
-            unzip app.zip
+
 
             # PORT=3000 /usr/local/lib/nodejs/node-v16.13.1-linux-x64/bin/node server.js
             # PORT=3000 node server.js
-            node simpleserver.js
+            
             #npm start
             
 
