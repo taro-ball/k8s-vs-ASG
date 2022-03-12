@@ -87,7 +87,7 @@ if [ "$type" == "asg" ]; then
   aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity $max_capacity --max-size $max_capacity
   # fix alb healthcheck
   if [ "$app" == "apache" ]; then
-    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
+    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/test.html,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
   fi
   if [ "$app" == "taewa" ] || [ "$app" == "taro" ] ; then
     aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:3000/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
