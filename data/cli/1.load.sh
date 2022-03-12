@@ -51,8 +51,10 @@ do
 done
 
 
+myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text`
+myalb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text`
+
 if [ "$type" == "k8s" ]; then
-  myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep workers`
   # enable advanced ec2 metrics in the lt (have to apply new ver in console mannually)
   template_name=`aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-`
   aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
@@ -69,18 +71,27 @@ fi
 # wait for stack to stabilise
 sleep 240
 
+# save vars for metric query
 echo export t_start=$(date +%FT%T) >> metrics_vars.txt
+echo export asg_name=${myasg} >> metrics_vars.txt
+echo export lb_name=${myalb} >> metrics_vars.txt
 
 ############### Prepare to run the load test ###############
 if [ "$type" == "asg" ]; then
   # get lb, asg and policy
   lb_dns=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g' | grep asg`
-  myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
   mypolicy_name=`aws autoscaling describe-policies --query "ScalingPolicies[*].PolicyName" --output text | sed 's/\s\+/\n/g' | grep asg`
   policy_json='{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue":'" ${cpu_perc}.0, "'"DisableScaleIn": false}'
   # set max, scale to max
   echo scaling to $max_capacity;
   aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity $max_capacity --max-size $max_capacity
+  # fix alb healthcheck
+  if [ "$app" == "apache" ]; then
+    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
+  fi
+  if [ "$app" == "taewa" ] || [ "$app" == "taro" ] ; then
+    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:3000/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
+  fi
 fi
 if [ "$type" == "k8s" ]; then
   # log on to k8s
@@ -98,10 +109,6 @@ fi
 
 # quick test
 curl http://${lb_dns}:${warmup_url}; echo
-# save vars for metric query
-echo export asg_name=${myasg} >> metrics_vars.txt
-echo export lb_name=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` >> metrics_vars.txt
-
 
 ############### LB warmup run ###############
 for((i=$warmup_min_threads;i<=$warmup_max_threads;i+=1));
