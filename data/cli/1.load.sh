@@ -147,6 +147,13 @@ done
 
 echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 
+# flush instances to avoid running out of space
+if [ "$type" == "asg" ]; then
+  echo scaling to 0;
+  aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --min-size 0 --desired-capacity 0;
+  sleep 30
+fi
+
 ############### Scaling run ###############
 for((i=1;i<=3;i+=1));
 do
