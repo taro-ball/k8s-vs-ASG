@@ -69,7 +69,7 @@ if [ "$type" == "k8s" ]; then
 fi
 
 # wait for stack to stabilise
-sleep 240
+sleep 180
 
 # save vars for metric query
 echo export t_start=$(date +%FT%T) >> metrics_vars.txt
@@ -106,6 +106,8 @@ if [ "$type" == "k8s" ]; then
   kubectl autoscale deployment ${app}-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 fi
 
+# wait for healthecks
+sleep 60
 
 # quick test
 curl http://${lb_dns}:${warmup_url}; echo
