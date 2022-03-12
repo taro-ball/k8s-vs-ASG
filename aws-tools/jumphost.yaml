@@ -109,7 +109,7 @@ Resources:
           cc="sshpass -p ${SSHpass} scp -o StrictHostKeyChecking=no -r $PWD ${SSHuser}@${SSHhost}:/home/${SSHuser}/$date_folder"
           echo $cc > 3.upload.noupl.sh
           
-          echo -e '\n\ncurl -s -X POST --user "'${mailjet}'" https://api.mailjet.com/v3.1/send -H '\''Content-Type: application/json'\'' -d '\''{"Messages":[{"From": {"Email": "le4mmbede@mozmail.com","Name": "aws script"},"To": [{"Email": "taro.ball@outlook.com"}],"Subject": "'${autotest}' run complete","TextPart": "Greetings master."}]}'\' >> 3.upload.noupl.sh
+          echo -e '\n\ncurl -s -X POST --user "'${mailjet}'" https://api.mailjet.com/v3.1/send -H '\''Content-Type: application/json'\'' -d '\''{"Messages":[{"From": {"Email": "le4mmbede@mozmail.com","Name": "aws script"},"To": [{"Email": "taro.ball@outlook.com"}],"Subject": "'$date_folder' run complete","TextPart": "Greetings master."}]}'\' >> 3.upload.noupl.sh
 
           echo aws configure set aws_access_key_id ${authkey}\; aws configure set aws_secret_access_key ${authsecret} > .k8sSecrets.noupl
           echo ${autotest} > mytest
