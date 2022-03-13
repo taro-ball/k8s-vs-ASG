@@ -50,9 +50,8 @@ do
   sleep 60;
 done
 
-
+echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text`
-myalb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text`
 
 if [ "$type" == "k8s" ]; then
   # enable advanced ec2 metrics in the lt (have to apply new ver in console mannually)
@@ -64,6 +63,7 @@ if [ "$type" == "k8s" ]; then
     --launch-template LaunchTemplateName=${template_name},Version='$Latest'
   ## refresh asg to apply the lt (disabled auto apply as it doesn't seem to work, see 6 March notes)
   # aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg
+
   # enable worker ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
 fi
@@ -71,10 +71,7 @@ fi
 # wait for stack to stabilise
 sleep 180
 
-# save vars for metric query
-echo export t_start=$(date +%FT%T) >> metrics_vars.txt
-echo export asg_name=${myasg} >> metrics_vars.txt
-echo export lb_name=${myalb} >> metrics_vars.txt
+
 
 ############### Prepare to run the load test ###############
 if [ "$type" == "asg" ]; then
@@ -86,6 +83,7 @@ if [ "$type" == "asg" ]; then
   echo scaling to $max_capacity;
   aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity $max_capacity --max-size $max_capacity
   # fix alb healthcheck
+  myalb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text`
   if [ "$app" == "apache" ]; then
     aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/test.html,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
   fi
@@ -202,6 +200,11 @@ done
 
 # wait for CloudWatch logs to catch up
 sleep 240
+
+# save vars for metric query
+myalb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text` # repeat here as in the beginning k8s alb isn't yet ready
+echo export asg_name=${myasg} >> metrics_vars.txt
+echo export lb_name=${myalb} >> metrics_vars.txt
 echo export t_end=$(date +%FT%T) >> metrics_vars.txt
 
 echo [$(date +%FT%T)]${line}[GET DATA]${line}
