@@ -150,6 +150,8 @@ echo export t_scaling=$(date +%FT%T) >> metrics_vars.txt
 # flush instances to avoid running out of space
 if [ "$type" == "asg" ]; then
   echo scaling to 0;
+  # 99cpu policy to prevent immideate scaleout on historical data
+  aws autoscaling put-scaling-policy --auto-scaling-group-name ${myasg} --policy-name $mypolicy_name --policy-type TargetTrackingScaling --target-tracking-configuration '{ "PredefinedMetricSpecification": { "PredefinedMetricType": "ASGAverageCPUUtilization" }, "TargetValue": 99.0, "DisableScaleIn": false}'
   aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --min-size 0 --desired-capacity 0;
   sleep 30
 fi
