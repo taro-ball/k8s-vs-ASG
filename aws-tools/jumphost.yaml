@@ -20,9 +20,11 @@ Parameters:
   #   #Description:
   #   Type: String
   #   Default: ami-123
-  LatestAmiId:
-      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-      Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs'
+  AMIimageID:
+    #Type: String
+    #Default: 'ami-01b20f5ea962e3fe7' #  amzn2-ami-hvm-2.0.20220218.3-x86_64-gp2
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs'
   autotest:
     Type: String
   SSHuser:
@@ -55,7 +57,7 @@ Resources:
   WebServer:
     Type: 'AWS::EC2::Instance'
     Properties:
-      ImageId: !Ref LatestAmiId
+      ImageId: !Ref AMIimageID
       InstanceType: !Ref myInstanceType
       IamInstanceProfile: !Sub "${myInstanceProfile}"
       #    Name:  !Ref myInstanceProfile

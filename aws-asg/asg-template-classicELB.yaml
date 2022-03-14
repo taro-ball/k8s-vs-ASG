@@ -29,6 +29,7 @@ Parameters:
   AMIimageID:
     #Description: 
     Type: String
+    #Default: 'ami-01b20f5ea962e3fe7' # amzn2-ami-hvm-2.0.20220218.3-x86_64-gp2
   testHostSubnet:
     Type: String
     Default: '0.0.0.0/0'
