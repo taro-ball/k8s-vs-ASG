@@ -58,10 +58,10 @@ if [ "$type" == "k8s" ]; then
   template_name=`aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output text | sed 's/\s\+/\n/g' | grep eks-`
   aws ec2 create-launch-template-version  --launch-template-name ${template_name} --version-description EnableAdvMonitoring --source-version 1 --launch-template-data '{"Monitoring": {"Enabled": true}}'
   aws ec2 modify-launch-template --launch-template-name ${template_name} --default-version 2
-  aws autoscaling update-auto-scaling-group \
-    --auto-scaling-group-name $myasg \
-    --launch-template LaunchTemplateName=${template_name},Version='$Latest'
-  ## refresh asg to apply the lt (disabled auto apply as it doesn't seem to work, see 6 March notes)
+  # aws autoscaling update-auto-scaling-group \ #(disabled auto apply as it doesn't seem to work, see 6 March notes)
+  #   --auto-scaling-group-name $myasg \
+  #   --launch-template LaunchTemplateName=${template_name},Version='$Latest'
+  ## refresh asg to apply the lt 
   # aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg
 
   # enable worker ASG metrics
