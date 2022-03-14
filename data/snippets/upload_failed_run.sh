@@ -3,6 +3,7 @@ upload failed run:
 export AWS_DEFAULT_REGION="us-east-1"
 
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g'` # | grep workers`
+or
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text| sed 's/\s\+/\n/g' | grep asg`
 
 echo export asg_name=${myasg} >> metrics_vars.txt

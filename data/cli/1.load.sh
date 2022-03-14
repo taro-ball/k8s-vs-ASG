@@ -116,6 +116,7 @@ do
     check_stats $type
     echo [$(date +%FT%T)]${line}[WARMUP RUN c${i}]${line}
     fortio load ${fortio_options} -c $i -t ${warmup_cycle_sec}s -labels "${test}-warmup-${i}" http://${lb_dns}:${warmup_url}
+    echo fortio exit code: $?
     check_stats $type
     sleep 60
 done
@@ -130,6 +131,7 @@ sleep 60
     do
       check_stats $type
       fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-performance-chunk-${i}-${x}" http://${lb_dns}:${testing_url}
+      echo fortio exit code: $?
     # check_stats $type
     done
 
@@ -140,6 +142,7 @@ do
     check_stats $type
     echo [$(date +%FT%T)]${line}[PERFORMANCE RUN ${i}]${line}
     fortio load ${fortio_options} -c $warmup_max_threads -t ${performance_sec}s -labels "${test}-performance-${i}" http://${lb_dns}:${testing_url}
+    echo fortio exit code: $?
     check_stats $type
 done
 
@@ -192,7 +195,9 @@ do
     for((y=1;y<=$scaling_minutes;y+=1));
     do
       check_stats $type
+      echo [$(date +%FT%T)]${line}[SCALING RUN ${i}: CHUNK $y]${line}
       fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-scaling-${i}-${y}" http://${lb_dns}:${testing_url}
+      echo fortio exit code: $?
     # check_stats $type
     done
     check_stats $type

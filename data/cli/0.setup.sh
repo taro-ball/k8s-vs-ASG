@@ -11,7 +11,7 @@ performance_sec=300
 cluster_name="C888"
 max_pods=6
 max_nodes=3
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
 if [ "$test" == "k8s_taewa_3" ]; then
@@ -26,7 +26,7 @@ performance_sec=300
 cluster_name="C888"
 max_pods=6
 max_nodes=3
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
 if [ "$test" == "asg_apache_3" ]; then
@@ -39,7 +39,7 @@ warmup_cycle_sec=130
 scaling_minutes=14
 performance_sec=300
 max_capacity=3
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
 if [ "$test" == "asg_taewa_3" ]; then
@@ -52,7 +52,7 @@ warmup_cycle_sec=90
 scaling_minutes=14
 performance_sec=300
 max_capacity=3
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
 set +x
