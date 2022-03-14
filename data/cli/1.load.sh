@@ -123,6 +123,7 @@ done
 
 aws elb describe-load-balancers
 aws autoscaling describe-auto-scaling-groups
+aws ec2 describe-instances  --query 'Reservations[*].Instances[*]' > instance.dump.json # save instance state after warmup, too much to keep in log
 
 ############### Performance chunk run ###############
 echo [$(date +%FT%T)]${line}[PERFORMANCE CHUNK RUN ${i}]${line}
