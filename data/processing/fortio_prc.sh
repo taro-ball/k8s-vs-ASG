@@ -16,9 +16,15 @@ if cd $tdir; then
 else
     echo invalid target dir - exit; exit
 fi
-sleep 1
+
+spath="./csv/$name.json"
+if test -f $spath; then
+    echo "$spath exists, skip."
+    exit
+fi
+
 mkdir csv
-rm -fv ./csv/$name.json
+#rm -fv $spath
 for f in 2022*.json
 do
   jq --compact-output '{"Labels":.Labels,"StartTime": .StartTime,"ActualQPS":.ActualQPS,"ActualDuration":.ActualDuration,"NumThreads":.NumThreads,"URL":.URL,"DurationHistogram.Avg":.DurationHistogram.Avg,"DurationHistogram.Count":.DurationHistogram.Count,"200count":.RetCodes["200"],"Sizes.Avg":.Sizes.Avg,"HeaderSizes.Avg":.HeaderSizes.Avg}' ${f} >> ./csv/$name.json
