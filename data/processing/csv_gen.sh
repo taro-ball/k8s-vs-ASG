@@ -15,7 +15,7 @@ if cd $tdir; then
 else
     echo invalid target dir - exit; exit
 fi
-sleep 1
+
 if mkdir csv; then
     echo writing to $PWD/csv
 else

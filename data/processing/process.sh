@@ -1,5 +1,4 @@
 #!/bin/bash
-./gsync.sh
 
 # 1.1 generate csv from AWS json
 find ./$1* -maxdepth 0 -type d -exec ./csv_gen.sh {} \;
