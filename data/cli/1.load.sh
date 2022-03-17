@@ -17,6 +17,7 @@ echo [$(date +%FT%T)]${line}[starting in $PWD]${line}
 source 0.setup.sh
 source .k8sSecrets.noupl
 aws sts get-caller-identity
+#port=`echo $string1 | sed -r 's/^([^.]+).*$/\1/; s/^[^0-9]*([0-9]+).*$/\1/'`
 
 ############# Functions #############
 check_stats () {
@@ -84,12 +85,7 @@ if [ "$type" == "asg" ]; then
   aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${myasg} --desired-capacity $max_capacity --max-size $max_capacity
   # fix alb healthcheck
   myalb=`aws elb describe-load-balancers --query 'LoadBalancerDescriptions[*].LoadBalancerName' --output text`
-  if [ "$app" == "apache" ]; then
-    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/test.html,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
-  fi
-  if [ "$app" == "taewa" ] || [ "$app" == "riwai" ] ; then
-    aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:3000/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
-  fi
+  aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:$warmup_url,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
 fi
 if [ "$type" == "k8s" ]; then
   # log on to k8s

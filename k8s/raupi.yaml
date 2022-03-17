@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: raupi-svc
+  labels:
+    env: raupi
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+  selector:
+    env: raupi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raupi-deployment
+  labels:
+    env: raupi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: raupi
+  template:
+    metadata:
+      labels:
+        env: raupi
+    spec:
+      containers:
+      - name: raupi
+        image: taroball/taro1:flskaa2eda1
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 1.0
+          requests:
+            cpu: 0.7

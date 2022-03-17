@@ -103,6 +103,14 @@ Resources:
               node server.js
             fi
 
+            if [ "$app" == "raupi" ]; then
+              cd /tmp/
+              curl -L -o app.zip https://github.com/taro-ball/GemCity/raw/master/other/flskaa2eda1.zip
+              unzip app.zip
+              pip3 install -r requirements.txt
+              python3 app.py
+            fi
+
             # curl -o /tmp/node-v16.13.1-linux-x64.tar.xz https://nodejs.org/dist/v16.13.1/node-v16.13.1-linux-x64.tar.xz
             # mkdir -p /usr/local/lib/nodejs
             # tar -xJvf /tmp/node-v16.13.1-linux-x64.tar.xz -C /usr/local/lib/nodejs
