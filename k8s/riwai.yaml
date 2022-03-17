@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: riwai-svc
+  labels:
+    env: riwai
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+  selector:
+    env: riwai
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: riwai-deployment
+  labels:
+    env: riwai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: riwai
+  template:
+    metadata:
+      labels:
+        env: riwai
+    spec:
+      containers:
+      - name: riwai
+        image: taroball/taro1:xpss9dee37a
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 1.0
+          requests:
+            cpu: 0.7

@@ -66,7 +66,6 @@ ax.plot(mdf[aws_metric], color=col1, marker='o', linewidth=1, markersize = 2.0)
 #add y-axis label
 ax.set_ylabel(aws_metric, color=col1, fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-# #define second y-axis that shares x-axis with current plot
 
 # # #define second y-axis that shares x-axis with current plot
 # ax3 = ax0.twinx()

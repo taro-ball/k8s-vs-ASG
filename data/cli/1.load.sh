@@ -87,7 +87,7 @@ if [ "$type" == "asg" ]; then
   if [ "$app" == "apache" ]; then
     aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:80/test.html,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
   fi
-  if [ "$app" == "taewa" ] || [ "$app" == "taro" ] ; then
+  if [ "$app" == "taewa" ] || [ "$app" == "riwai" ] ; then
     aws elb configure-health-check --load-balancer-name ${myalb} --health-check Target=HTTP:3000/,Interval=10,UnhealthyThreshold=6,HealthyThreshold=2,Timeout=5
   fi
 fi
