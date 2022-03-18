@@ -64,7 +64,7 @@ if [ "$type" == "k8s" ]; then
   #   --launch-template LaunchTemplateName=${template_name},Version='$Latest'
   ## refresh asg to apply the lt 
   # aws autoscaling start-instance-refresh --auto-scaling-group-name $myasg
-
+  
   # enable worker ASG metrics
   aws autoscaling enable-metrics-collection --auto-scaling-group-name ${myasg} --granularity "1Minute"
 fi
@@ -96,6 +96,10 @@ if [ "$type" == "k8s" ]; then
 
   # start k8s metrics collection
   nohup ./k8s-metrics.sh&
+
+  # scale k8s nodes to max
+  eksctl scale nodegroup --cluster=$cluster_name --name=standard-workers --nodes=$max_nodes --nodes-max=$max_nodes
+
   # enable hpa 
   kubectl autoscale deployment ${app}-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
 fi

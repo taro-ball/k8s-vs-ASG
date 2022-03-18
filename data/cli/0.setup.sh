@@ -62,12 +62,12 @@ hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-scaling_minutes=14
+scaling_minutes=25
 performance_sec=300
 cluster_name="C888"
 max_pods=12
 max_nodes=6
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Critical -allow-initial-errors"
 fi
 
 if [ "$test" == "asg_taewa_6" ]; then
@@ -77,10 +77,10 @@ cpu_perc=35
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
-scaling_minutes=14
+scaling_minutes=25
 performance_sec=300
 max_capacity=6
-fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
+fortio_options="-a -qps -1 -r 0.01 -loglevel Critical -allow-initial-errors"
 fi
 
 
