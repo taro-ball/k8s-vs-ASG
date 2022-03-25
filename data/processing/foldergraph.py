@@ -1,14 +1,17 @@
+from tokenize import String
 import pandas as pd
 import argparse
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("dir_path", type=Path)
-parser.add_argument("--overwrite", help="overwrite destination",
-                    action="store_true")
+parser.add_argument("--metric", type=str, default="estimatedProcessedBytes")
+parser.add_argument("--threads", help="plot threads", action="store_true")
+parser.add_argument("--overwrite", help="overwrite destination", action="store_true")
 
-aws_metric='estimatedProcessedBytes'#'cpuUtilization'
+
 p = parser.parse_args()
+aws_metric = p.metric #'estimatedProcessedBytes'#'cpuUtilization'
 
 if p.dir_path.exists():
   #and type(p.file_path)
