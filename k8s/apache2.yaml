@@ -37,4 +37,4 @@ spec:
           limits:
             cpu: 2.0
           requests:
-            cpu: 1.5
+            cpu: 1.1
