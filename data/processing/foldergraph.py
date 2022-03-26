@@ -70,14 +70,15 @@ ax.plot(mdf[aws_metric], color=col1, marker='o', linewidth=1, markersize = 2.0)
 ax.set_ylabel(aws_metric, color=col1, fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 
-# # #define second y-axis that shares x-axis with current plot
-# ax3 = ax0.twinx()
-# ax3.spines.right.set_position(("axes", 1.2))
-# # #add second line to plot
-# ax3.plot(qps.NumThreads, color="purple", marker='o', linestyle='--', markersize = 5.0)
+if p.threads:
+  # #define second y-axis that shares x-axis with current plot
+  ax3 = ax0.twinx()
+  ax3.spines.right.set_position(("axes", 1.2))
+  # #add second line to plot
+  ax3.plot(qps.NumThreads, color="purple", marker='o', linestyle='--', markersize = 5.0)
 
-# # #add second y-axis label
-# ax3.set_ylabel('threads', color="purple", fontsize=16)
+  # #add second y-axis label
+  ax3.set_ylabel('threads', color="purple", fontsize=16)
 
 fig.set_size_inches(7, 3.5)
 fig.savefig(out_file, bbox_inches='tight', dpi=100)
