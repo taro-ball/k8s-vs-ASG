@@ -49,8 +49,14 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 #define colors to use
-col1 = 'steelblue'
+hex1='#' # random color
+for x in range(1,4):
+    n=ord(aws_metric[x])-10
+    n=n-100 if n%2==0 else n*2
+    hex1+= f'{n:02X}'
+
 col2 = 'red'
+
 
 #define subplots
 fig,ax0 = plt.subplots()
@@ -65,9 +71,9 @@ ax0.set_ylim(ymin=0)
 ax = ax0.twinx()
 
 # #add second line to plot
-ax.plot(mdf[aws_metric], color=col1, marker='o', linewidth=1, markersize = 2.0)
+ax.plot(mdf[aws_metric], color=hex1, marker='o', linewidth=1, markersize = 2.0)
 #add y-axis label
-ax.set_ylabel(aws_metric, color=col1, fontsize=16)
+ax.set_ylabel(aws_metric, color=hex1, fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 
 if p.threads:
