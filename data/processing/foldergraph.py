@@ -70,8 +70,16 @@ ax0.set_ylabel('QPS', color=col2, fontsize=16)
 ax0.set_ylim(ymin=0)
 ax = ax0.twinx()
 
+
 # #add second line to plot
-ax.plot(mdf[aws_metric], color=hex1, marker='o', linewidth=1, markersize = 2.0)
+line2 = ax.plot(mdf[aws_metric])
+
+
+if aws_metric=="backendConnectionErrors":
+  plt.setp(line2, color='purple', marker='o', linestyle='None', markersize = 6.0)
+else:
+  plt.setp(line2, color=hex1, marker='o', linewidth=1, markersize = 2.0)
+
 #add y-axis label
 ax.set_ylabel(aws_metric, color=hex1, fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
