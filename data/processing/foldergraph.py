@@ -63,26 +63,37 @@ fig,ax0 = plt.subplots()
 
 
 #add first line to plot
-ax0.plot(qps.ActualQPS, color=col2, marker='s', linestyle='None', markersize = 6.0)
+l1=ax0.plot(qps.ActualQPS, color=col2, marker='s', linestyle='None', markersize = 6.0, label = 'QPS')
 plt.grid()
-# #add second y-axis label
+# add y-axis label
 ax0.set_ylabel('QPS', color=col2, fontsize=16)
 ax0.set_ylim(ymin=0)
 ax = ax0.twinx()
-
+#ax0.legend()
 
 # #add second line to plot
-line2 = ax.plot(mdf[aws_metric])
-
+l2 = ax.plot(mdf[aws_metric], label = aws_metric)
+#ax.legend()
 
 if aws_metric=="backendConnectionErrors":
-  plt.setp(line2, color='purple', marker='o', linestyle='None', markersize = 6.0)
+  hex1='purple'
+  plt.setp(l2, color=hex1, marker='o', linestyle='None', markersize = 6.0)
 else:
-  plt.setp(line2, color=hex1, marker='o', linewidth=1, markersize = 2.0)
+  plt.setp(l2, color=hex1, marker='o', linewidth=1, markersize = 2.0)
 
 #add y-axis label
 ax.set_ylabel(aws_metric, color=hex1, fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+
+# add legend
+lns = l1+l2
+labs = [l.get_label() for l in lns]
+ax.legend(lns, labs, loc='center left', bbox_to_anchor=(0.0, 0.1))#.set_zorder(999)
+# color axis
+ax.spines.left.set_color(col2)
+ax.spines.left.set_linewidth(2)
+ax.spines.right.set_color(hex1)
+ax.spines.right.set_linewidth(2)
 
 if p.threads:
   # #define second y-axis that shares x-axis with current plot
@@ -90,9 +101,10 @@ if p.threads:
   ax3.spines.right.set_position(("axes", 1.2))
   # #add second line to plot
   ax3.plot(qps.NumThreads, color="purple", marker='o', linestyle='--', markersize = 5.0)
-
+ # ax3.legend(loc=1)
   # #add second y-axis label
   ax3.set_ylabel('threads', color="purple", fontsize=16)
 
+#fig.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 fig.set_size_inches(7, 3.5)
 fig.savefig(out_file, bbox_inches='tight', dpi=100)
