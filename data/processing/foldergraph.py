@@ -27,10 +27,10 @@ if out_file.exists() and not p.overwrite:
   quit()
 
 csv_paths = p.dir_path.glob('**/*'+aws_metric+'.csv')
-cpu_path=list(csv_paths)[0]
-print("found: "+ str(cpu_path))
+metric_path=list(csv_paths)[0]
+print("found: "+ str(metric_path))
 
-mdf = pd.read_csv(cpu_path, parse_dates=['datetime'], index_col="datetime")
+mdf = pd.read_csv(metric_path, parse_dates=['datetime'], index_col="datetime")
 
 json_paths = p.dir_path.glob('**/*.json')
 fortio_path=list(json_paths)[0]
@@ -67,6 +67,7 @@ l1=ax0.plot(qps.ActualQPS, color=col2, marker='s', linestyle='None', markersize 
 plt.grid()
 # add y-axis label
 ax0.set_ylabel('QPS', color=col2, fontsize=16)
+
 ax0.set_ylim(ymin=0)
 ax = ax0.twinx()
 #ax0.legend()
@@ -95,6 +96,9 @@ ax.spines.left.set_linewidth(2)
 ax.spines.right.set_color(hex1)
 ax.spines.right.set_linewidth(2)
 
+title=f'Run id: {p.dir_path.parent.name}'
+ax.set_title(title, y=1.11, pad=-14,fontsize=10)
+
 if p.threads:
   # #define second y-axis that shares x-axis with current plot
   ax3 = ax0.twinx()
@@ -106,5 +110,5 @@ if p.threads:
   ax3.set_ylabel('threads', color="purple", fontsize=16)
 
 #fig.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-fig.set_size_inches(7, 3.5)
+fig.set_size_inches(7, 3.4)
 fig.savefig(out_file, bbox_inches='tight', dpi=100)

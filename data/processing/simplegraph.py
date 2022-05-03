@@ -35,6 +35,8 @@ df2=df.resample('60S').mean() # show gaps, see https://stackoverflow.com/questio
 #tks=np.arange(0, ydata.max(), round(ydata.max()/20))
 
 plot = df2.plot(kind='line', style='.-', linewidth=1.0, grid=1, figsize=(7,3.5)) #yticks=tks
-plot.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+plot.legend(loc='center left', bbox_to_anchor=(0.0, 0.1))
+title=f'Run id: {p.file_path.parent.parent.name}'
+plot.set_title(title, y=1.11, pad=-14,fontsize=10)
 fig = plot.get_figure()
 fig.savefig(out_file, bbox_inches='tight')
