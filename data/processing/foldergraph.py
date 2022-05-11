@@ -66,7 +66,7 @@ fig,ax0 = plt.subplots()
 l1=ax0.plot(qps.ActualQPS, color=col2, marker='s', linestyle='None', markersize = 6.0, label = 'QPS')
 plt.grid()
 # add y-axis label
-ax0.set_ylabel('QPS', color=col2, fontsize=16)
+ax0.set_ylabel('qps', color=col2, fontsize=16)
 
 ax0.set_ylim(ymin=0)
 ax = ax0.twinx()
