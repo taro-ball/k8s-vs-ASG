@@ -51,6 +51,7 @@ do
   sleep 60;
 done
 
+
 echo export t_start=$(date +%FT%T) >> metrics_vars.txt
 myasg=`aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[*].AutoScalingGroupName' --output text`
 
@@ -186,11 +187,10 @@ do
       sleep 160;
       # create the hpa
       kubectl autoscale deployment ${app}-deployment --cpu-percent=$hpa_perc --min=1 --max=$max_pods
-      # wait for hpa to get metrics
 
     fi
 
-    sleep 20 # let hpa stabilise
+    sleep 20 # let hpa stabilise (collect initial metrics)
 
     echo [$(date +%FT%T)]${line}[SCALING RUN ${i}: FORTIO]${line}
     for((y=1;y<=$scaling_minutes;y+=1));
@@ -199,7 +199,6 @@ do
       echo [$(date +%FT%T)]${line}[SCALING RUN ${i}: CHUNK $y]${line}
       fortio load -quiet ${fortio_options} -c $warmup_max_threads -t 60s -labels "${test}-scaling-${i}-${y}" http://${lb_dns}:${testing_url}
       echo fortio exit code: $?
-    # check_stats $type
     done
     check_stats $type
 done
