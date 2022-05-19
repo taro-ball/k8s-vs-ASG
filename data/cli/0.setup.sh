@@ -60,7 +60,7 @@ fi
 if [ "$test" == "k8s_taewa2_3" ]; then
 warmup_url='3000/?n=20000'
 testing_url='3000/?n=20000'
-hpa_perc=35
+hpa_perc=70
 warmup_min_threads=15
 warmup_max_threads=25
 warmup_cycle_sec=90
