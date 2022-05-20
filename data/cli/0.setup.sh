@@ -57,6 +57,7 @@ max_nodes=3
 fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
+# 3 pods with 1.1 requests
 if [ "$test" == "k8s_taewa2_3" ]; then
 warmup_url='3000/?n=20000'
 testing_url='3000/?n=20000'
@@ -67,7 +68,7 @@ warmup_cycle_sec=90
 scaling_minutes=14
 performance_sec=300
 cluster_name="C888"
-max_pods=6
+max_pods=3
 max_nodes=3
 fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
