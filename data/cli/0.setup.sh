@@ -42,6 +42,21 @@ max_nodes=3
 fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
 fi
 
+if [ "$test" == "k8s_apache2_3new" ]; then
+warmup_url='80/'
+testing_url='80/'
+hpa_perc=63.4
+warmup_min_threads=60
+warmup_max_threads=70
+warmup_cycle_sec=130
+scaling_minutes=14
+performance_sec=300
+cluster_name="C888"
+max_pods=3
+max_nodes=3
+fortio_options="-a -qps -1 -r 0.01 -loglevel Error -allow-initial-errors"
+fi
+
 if [ "$test" == "k8s_taewa_3" ]; then
 warmup_url='3000/?n=20000'
 testing_url='3000/?n=20000'
