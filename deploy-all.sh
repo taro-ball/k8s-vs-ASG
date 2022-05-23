@@ -14,6 +14,8 @@ set -x
 
 # if not using default profile
 source .exclAuthenticate.sh
+aws sts get-caller-identity
+
 
 # write new key only if successful
 pem=$(aws ec2 create-key-pair --key-name dev-key) && echo "$pem" | jq --raw-output '.KeyMaterial' > .exclDEV-Key.pem
