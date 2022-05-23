@@ -35,14 +35,3 @@ if  [ "${autotest:0:3}" != "asg" ]; then
     ./apply-k8s.sh $autotest
     cd ..
 fi
-
-
-
-
-
-
-
-
-
-# cmd="google-chrome";
-# eval "${cmd}" &>.exclOutput.log & disown;

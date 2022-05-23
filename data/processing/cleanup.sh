@@ -1,0 +1,3 @@
+#!/bin/bash
+echo looking for secrets...
+find . -name '*noupl*' -exec rm -v {} \;

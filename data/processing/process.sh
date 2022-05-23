@@ -17,5 +17,6 @@ find ./$1*/csv -maxdepth 0 -type d -exec $fg {} \; -exec $fg --metric cpuUtiliza
 find ./$1*/csv/*.csv -exec python ../k8s-aws-thesis/data/processing/simplegraph.py --overwrite {} \;
 
 # 3.0 re-generate results explorer
+rm o_summary.csv
 cd ../k8s-aws-thesis/data/processing
 ipython -c "%run resultsExplorer.ipynb"
