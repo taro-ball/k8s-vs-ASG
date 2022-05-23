@@ -6,14 +6,13 @@ match=`cat data/cli/0.setup.sh | grep -ho $1 2> /dev/null`
 if [ -z "$match" ]; then
     echo Test name not recognized. Valid options:
     egrep -ho 'asg_\w+|k8s_\w+' data/cli/0.setup.sh
-    read -p "Press enter to deploy all or [ctrl]+[c] to abort."
-    #autotest=k8s_node3
+    exit 1
 fi
 
 set -x
 
 # if not using default profile
-source .exclAuthenticate.sh
+# source .exclAuthenticate.sh # cant use until k8s creds are properly fixed
 aws sts get-caller-identity
 
 
