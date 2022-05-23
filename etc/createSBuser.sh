@@ -13,3 +13,6 @@ echo $creds
 
 echo -e "[default]\naws_access_key_id=`echo $creds | jq -r ".AccessKey.AccessKeyId"`" > ~/.aws/credentials
 echo -e "aws_secret_access_key=`echo $creds | jq -r ".AccessKey.SecretAccessKey"` \n#$(date)" >> ~/.aws/credentials
+
+echo Waiting for credentials...
+sleep 7
