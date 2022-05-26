@@ -76,8 +76,8 @@ ax = ax0.twinx()
 l2 = ax.plot(mdf[aws_metric], label = aws_metric)
 #ax.legend()
 
-if aws_metric=="backendConnectionErrors":
-  hex1='purple'
+if aws_metric=="backendConnectionErrors" or aws_metric=="requestCount" :
+  hex1='blue'
   plt.setp(l2, color=hex1, marker='o', linestyle='None', markersize = 6.0)
 else:
   plt.setp(l2, color=hex1, marker='o', linewidth=1, markersize = 2.0)
@@ -103,11 +103,13 @@ if p.threads:
   # #define second y-axis that shares x-axis with current plot
   ax3 = ax0.twinx()
   ax3.spines.right.set_position(("axes", 1.2))
+  ax3.spines.right.set_color("purple")
+  ax3.spines.right.set_linewidth(2)
   # #add second line to plot
   ax3.plot(qps.NumThreads, color="purple", marker='o', linestyle='--', markersize = 5.0)
  # ax3.legend(loc=1)
   # #add second y-axis label
-  ax3.set_ylabel('threads', color="purple", fontsize=16)
+  ax3.set_ylabel('NumThreads', color="purple", fontsize=16)
 
 #fig.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 fig.set_size_inches(7, 3.4)
