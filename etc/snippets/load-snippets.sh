@@ -7,6 +7,13 @@ set -x
 # -qps -1: max queries per second
 # -r 0.01: Resolution of the histogram lowest buckets in seconds
 
+lb=`aws elb describe-load-balancers --region us-east-1 --query 'LoadBalancerDescriptions[*].DNSName' --output text | sed 's/\s\+/\n/g'`
+echo $lb;cd;pwd; curl $lb
+hey -c 10 -z 1m $lb
+
+fortio load -a -c 60 -t 600s -qps -1 -r 0.01 http://$lb
+
+
 # 
 chmod +x load.sh
 screen
