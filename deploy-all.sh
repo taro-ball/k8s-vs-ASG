@@ -25,7 +25,7 @@ cd ..
 
 if  [ "${autotest:0:3}" != "k8s" ]; then
     cd aws-asg
-    ./DeployAutodetect.sh 1 $autotest
+    ./deployASG.sh 1 $autotest
     cd ..
 fi
 
