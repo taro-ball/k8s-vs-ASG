@@ -8,3 +8,7 @@ This repo contains infrastructure, delyment and data processing code for my Mast
 * [etc/](etc/) Auxilary automation
 * [k8s/](k8s/) k8s system services and test applications' manifests
 * [deploy-all.sh/](deploy-all.sh) The master script that brings it all together
+
+See also:
+- [Results](https://taro-ball.github.io/thesis-results/)
+- [App code](https://github.com/taro-ball/thesis-apps)
